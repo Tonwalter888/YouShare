@@ -139,7 +139,7 @@ static UIImage *shareImage(NSString *qualityLabel) {
     YTPlayerViewController *parentViewController = _delegate.parentViewController;
     // Call our custom method in the YTPlayerViewController class
     if (parentViewController) {
-        [parentViewController didPressShare];
+        [parentViewController didPressYouShare];
     }
 }
 

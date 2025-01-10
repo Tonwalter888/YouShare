@@ -86,7 +86,7 @@ static UIImage *shareImage(NSString *qualityLabel) {
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         [pasteboard setString:videoId];
         // Show a snackbar to inform the user
-        [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied to clipboard."]];
+        [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied to clipboard"]];
     } else {
         NSLog(@"No video ID available");
     }

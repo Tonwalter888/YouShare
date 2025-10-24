@@ -71,7 +71,10 @@ NSBundle *YouShareBundle() {
 }
 
 static UIImage *shareImage(NSString *qualityLabel) {
-    return [%c(QTMIcon) tintImage:[UIImage imageNamed:[NSString stringWithFormat:@"Share@%@", qualityLabel] inBundle: YouShareBundle() compatibleWithTraitCollection:nil] color:[%c(YTColor) white1]];
+    return [%c(QTMIcon) tintImage:[UIImage imageNamed:[NSString stringWithFormat:@"Share@%@", qualityLabel]
+                                              inBundle:YouShareBundle()
+                         compatibleWithTraitCollection:nil]
+                              color:[%c(YTColor) white1]];
 }
 
 %group Main
@@ -102,7 +105,7 @@ static UIImage *shareImage(NSString *qualityLabel) {
 %hook YTMainAppControlsOverlayView
 
 - (UIImage *)buttonImage:(NSString *)tweakId {
-    return [tweakId isEqualToString:TweakKey] ? timestampImage(@"3") : %orig;
+    return [tweakId isEqualToString:TweakKey] ? shareImage(@"3") : %orig;
 }
 
 // Custom method to handle the timestamp button press

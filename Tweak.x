@@ -23,8 +23,8 @@
 
 @interface YTPlayerViewController (YouShare)
 @property (nonatomic, assign) CGFloat currentVideoMediaTime;
-@property (nonatomic, assign) NSString *currentVideoID;
-- (void)didPressYouTimeStamp;
+@property (nonatomic, strong) NSString *currentVideoID;
+- (void)didPressYouShare;
 @end
 
 @interface YTMainAppControlsOverlayView (YouShare)
@@ -76,20 +76,20 @@ static UIImage *shareImage(NSString *qualityLabel) {
 
 %group Main
 %hook YTPlayerViewController
-// New method to copy the URL to the clipboard - @arichornlover
 %new
-- (void)didPressYouTimeStamp {
-    // Create a link using the video ID without timestamp
+- (void)didPressYouShare {
     if (self.currentVideoID) {
         NSString *videoId = [NSString stringWithFormat:@"https://youtube.com/watch?v=%@", self.currentVideoID];
 
-        // Copy the link to clipboard
+        // Copy to clipboard
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         [pasteboard setString:videoId];
-        // Show a snackbar to inform the user
-        [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied to clipboard"]];
+
+        // Show HUD
+        [[%c(GOOHUDManagerInternal) sharedInstance]
+            showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied to clipboard"]];
     } else {
-        NSLog(@"No video ID available");
+        NSLog(@"[YouShare] No video ID available");
     }
 }
 %end
@@ -131,19 +131,15 @@ static UIImage *shareImage(NSString *qualityLabel) {
     return [tweakId isEqualToString:TweakKey] ? shareImage(@"3") : %orig;
 }
 
-// Custom method to handle the timestamp button press
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
-    // Navigate to the YTPlayerViewController class from here
-    YTInlinePlayerBarController *delegate = self.delegate; // for @property
-    YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"]; // for ivars
+    YTInlinePlayerBarController *delegate = self.delegate;
+    YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"];
     YTPlayerViewController *parentViewController = _delegate.parentViewController;
-    // Call our custom method in the YTPlayerViewController class
     if (parentViewController) {
         [parentViewController didPressYouShare];
     }
 }
-
 %end
 %end
 

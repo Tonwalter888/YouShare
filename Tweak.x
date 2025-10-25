@@ -113,7 +113,7 @@ static UIImage *shareImage(NSString *qualityLabel) {
 %hook YTMainAppControlsOverlayView
 
 - (UIImage *)buttonImage:(NSString *)tweakId {
-    return [tweakId isEqualToString:TweakKey] ? timestampImage(@"3") : %orig;
+    return [tweakId isEqualToString:TweakKey] ? shareImage(@"3") : %orig;
 }
 
 // Custom method to handle the timestamp button press

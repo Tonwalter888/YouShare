@@ -88,9 +88,19 @@ static UIImage *shareImage(NSString *qualityLabel) {
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         [pasteboard setString:videoId];
 
-        // Show HUD
+        // Load localized string
+        NSBundle *bundle = YouShareBundle();
+        NSString *msg = NSLocalizedStringFromTableInBundle(
+            @"URL_COPIED",
+            nil,
+            bundle ?: [NSBundle mainBundle],
+            @"Message when URL is copied"
+        );
+
+        // Show snackbar
         [[%c(GOOHUDManagerInternal) sharedInstance]
-            showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied to clipboard"]];
+            showMessageMainThread:[%c(YTHUDMessage) messageWithText:msg]];
+
     } else {
         NSLog(@"[YouShare] No video ID available");
     }

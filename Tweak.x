@@ -22,22 +22,22 @@
 @end
 
 @interface YTPlayerViewController (YouShare)
-@property (nonatomic, assign) CGFloat currentVideoMediaTime;
+@property (nonatomic, strong) CGFloat currentVideoMediaTime;
 @property (nonatomic, strong) NSString *currentVideoID;
 - (void)didPressYouShare;
 @end
 
 @interface YTMainAppControlsOverlayView (YouShare)
 @property (nonatomic, assign) YTPlayerViewController *playerViewController;
-- (void)didPressYouTimeStamp:(id)arg;
+- (void)didPressYouShare:(id)arg;
 @end
 
 @interface YTInlinePlayerBarController : NSObject
 @end
 
-@interface YTInlinePlayerBarContainerView (YouTimeStamp)
+@interface YTInlinePlayerBarContainerView (YouShare)
 @property (nonatomic, strong) YTInlinePlayerBarController *delegate;
-- (void)didPressYouTimeStamp:(id)arg;
+- (void)didPressYouShare:(id)arg;
 @end
 
 

@@ -22,7 +22,7 @@
 @end
 
 @interface YTPlayerViewController (YouShare)
-@property (nonatomic, strong) CGFloat currentVideoMediaTime;
+@property (nonatomic, assign) CGFloat currentVideoMediaTime;
 @property (nonatomic, strong) NSString *currentVideoID;
 - (void)didPressYouShare;
 @end

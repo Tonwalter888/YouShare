@@ -1,4 +1,3 @@
-// Settings
-
 "ENABLED" = "Show share button";
 "POSITION" = "share button position";
+"URL_COPIED" = "URL Copied to Clipboard";

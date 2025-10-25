@@ -23,7 +23,7 @@
 
 @interface YTPlayerViewController (YouShare)
 @property (nonatomic, assign) CGFloat currentVideoMediaTime;
-@property (nonatomic, strong) NSString *currentVideoID;
+@property (nonatomic, assign) NSString *currentVideoID;
 - (void)didPressYouShare;
 @end
 
@@ -71,23 +71,21 @@ NSBundle *YouShareBundle() {
 }
 
 static UIImage *shareImage(NSString *qualityLabel) {
-    return [%c(QTMIcon) tintImage:[UIImage imageNamed:[NSString stringWithFormat:@"Share@%@", qualityLabel]
-                                              inBundle:YouShareBundle()
-                         compatibleWithTraitCollection:nil]
-                              color:[%c(YTColor) white1]];
+    return [%c(QTMIcon) tintImage:[UIImage imageNamed:[NSString stringWithFormat:@"Share@%@", qualityLabel] inBundle: YouShareBundle() compatibleWithTraitCollection:nil] color:[%c(YTColor) white1]];
 }
 
 %group Main
 %hook YTPlayerViewController
+// New method to copy the URL to the clipboard - @arichornlover
 %new
 - (void)didPressYouShare {
+    // Create a link using the video ID without timestamp
     if (self.currentVideoID) {
         NSString *videoId = [NSString stringWithFormat:@"https://youtube.com/watch?v=%@", self.currentVideoID];
 
-        // Copy to clipboard
+        // Copy the link to clipboard
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         [pasteboard setString:videoId];
-
         // Load localized string
         NSBundle *bundle = YouShareBundle();
         NSString *msg = NSLocalizedStringFromTableInBundle(
@@ -115,7 +113,7 @@ static UIImage *shareImage(NSString *qualityLabel) {
 %hook YTMainAppControlsOverlayView
 
 - (UIImage *)buttonImage:(NSString *)tweakId {
-    return [tweakId isEqualToString:TweakKey] ? shareImage(@"3") : %orig;
+    return [tweakId isEqualToString:TweakKey] ? timestampImage(@"3") : %orig;
 }
 
 // Custom method to handle the timestamp button press
@@ -144,15 +142,19 @@ static UIImage *shareImage(NSString *qualityLabel) {
     return [tweakId isEqualToString:TweakKey] ? shareImage(@"3") : %orig;
 }
 
+// Custom method to handle the timestamp button press
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
-    YTInlinePlayerBarController *delegate = self.delegate;
-    YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"];
+    // Navigate to the YTPlayerViewController class from here
+    YTInlinePlayerBarController *delegate = self.delegate; // for @property
+    YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"]; // for ivars
     YTPlayerViewController *parentViewController = _delegate.parentViewController;
+    // Call our custom method in the YTPlayerViewController class
     if (parentViewController) {
         [parentViewController didPressYouShare];
     }
 }
+
 %end
 %end
 

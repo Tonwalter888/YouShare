@@ -9,7 +9,8 @@
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayViewController.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayView.h>
 #import <YouTubeHeader/YTMainAppControlsOverlayView.h>
-#import <YouTubeHeader/YTPlayerViewController.h>
+#import <YouTubeHeader/YTActionSheetController.h>
+#import <YouTubeHeader/YTActionSheetAction.h>
 
 #define TweakKey @"YouShare"
 
@@ -40,6 +41,9 @@
 - (void)didPressYouShare:(id)arg;
 @end
 
+@interface YTActionSheetController (YouShare)
+- (void)addAction:(id)action;
+@end
 
 // For displaying snackbars - @theRealfoxster
 @interface YTHUDMessage : NSObject
@@ -74,34 +78,92 @@ static UIImage *shareImage(NSString *qualityLabel) {
     return [%c(QTMIcon) tintImage:[UIImage imageNamed:[NSString stringWithFormat:@"Share@%@", qualityLabel] inBundle: YouShareBundle() compatibleWithTraitCollection:nil] color:[%c(YTColor) white1]];
 }
 
+static UIImage *timestampImage(NSString *qualityLabel) {
+    return [%c(QTMIcon) tintImage:[UIImage imageNamed:[NSString stringWithFormat:@"Timestamp@%@", qualityLabel] inBundle:YouShareBundle() compatibleWithTraitCollection:nil] color:[%c(YTColor) white1]];
+}
+
+static inline NSString *YSLocalized(NSString *key, NSString *comment) {
+    return NSLocalizedStringFromTableInBundle(
+        key,
+        nil,
+        YouShareBundle() ?: [NSBundle mainBundle],
+        comment
+    );
+}
+
 %group Main
 %hook YTPlayerViewController
-// New method to copy the URL to the clipboard - @arichornlover
 %new
 - (void)didPressYouShare {
-    // Create a link using the video ID without timestamp
-    if (self.currentVideoID) {
-        NSString *videoId = [NSString stringWithFormat:@"https://youtube.com/watch?v=%@", self.currentVideoID];
+    if (!self.currentVideoID)
+        return;
 
-        // Copy the link to clipboard
-        UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-        [pasteboard setString:videoId];
-        // Load localized string
-        NSBundle *bundle = YouShareBundle();
-        NSString *msg = NSLocalizedStringFromTableInBundle(
-            @"URL_COPIED",
-            nil,
-            bundle ?: [NSBundle mainBundle],
-            @"Message when URL is copied"
-        );
+    // URL
+    NSString *baseURL =
+        [NSString stringWithFormat:@"https://youtube.com/watch?v=%@", self.currentVideoID];
+    NSInteger seconds = (NSInteger)floor(self.currentVideoMediaTime);
+    NSString *timestampURL =
+        [NSString stringWithFormat:@"%@&t=%lds", baseURL, (long)seconds];
 
-        // Show snackbar
-        [[%c(GOOHUDManagerInternal) sharedInstance]
-            showMessageMainThread:[%c(YTHUDMessage) messageWithText:msg]];
+    // Localized strings
+    NSString *copyURLTitle =
+        YSLocalized(@"COPY_URL", @"Action title: Copy URL");
 
-    } else {
-        NSLog(@"[YouShare] No video ID available");
+    NSString *copyTimestampTitle =
+        YSLocalized(@"COPY_URL_TIMESTAMP", @"Action title: Copy URL with timestamp");
+
+    NSString *urlCopiedMsg =
+        YSLocalized(@"URL_COPIED", @"Toast when URL is copied");
+
+    NSString *timestampCopiedMsg =
+        YSLocalized(@"URL_TIMESTAMP_COPIED", @"Toast when URL with timestamp is copied");
+
+    // Action sheet
+    YTActionSheetController *sheet =
+        [%c(YTActionSheetController) actionSheetController];
+    UIImage *shareIcon = shareImage(@"3");
+    UIImage *timestampIcon = timestampImage(@"3");
+
+    // Copy URL
+    YTActionSheetAction *copyURL =
+        [%c(YTActionSheetAction)
+            actionWithTitle:copyURLTitle
+            iconImage:shareIcon
+            style:0
+            handler:^(YTActionSheetAction *action) {
+                UIPasteboard.generalPasteboard.string = baseURL;
+                [[%c(GOOHUDManagerInternal) sharedInstance]
+                    showMessageMainThread:
+                        [%c(YTHUDMessage) messageWithText:urlCopiedMsg]];
+                action.shouldDismissOnAction = YES;
+            }];
+    [sheet addAction:copyURL];
+
+    // Copy URL with timestamp
+    YTActionSheetAction *copyTimestamp =
+        [%c(YTActionSheetAction)
+            actionWithTitle:copyTimestampTitle
+            iconImage:timestampIcon
+            style:0
+            handler:^(YTActionSheetAction *action) {
+                UIPasteboard.generalPasteboard.string = timestampURL;
+                [[%c(GOOHUDManagerInternal) sharedInstance]
+                    showMessageMainThread:
+                        [%c(YTHUDMessage) messageWithText:timestampCopiedMsg]];
+                action.shouldDismissOnAction = YES;
+            }];
+    [sheet addAction:copyTimestamp];
+
+    // Cancel button
+    [sheet addCancelActionIfNeeded];
+
+    UIViewController *presenter = self;
+    while (presenter.presentedViewController) {
+        presenter = presenter.presentedViewController;
     }
+    [sheet presentFromViewController:presenter
+                            animated:YES
+                          completion:nil];
 }
 %end
 %end

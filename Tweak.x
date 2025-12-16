@@ -8,7 +8,6 @@
 #import <YouTubeHeader/QTMIcon.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayViewController.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayView.h>
-#import <YouTubeHeader/YTMainAppControlsOverlayView.h>
 #import <YouTubeHeader/YTActionSheetController.h>
 #import <YouTubeHeader/YTActionSheetAction.h>
 

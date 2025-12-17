@@ -4,3 +4,4 @@
 "COPY_URL" = "Copy video link";
 "COPY_URL_TIMESTAMP" = "Copy video link with timestamp";
 "URL_TIMESTAMP_COPIED" = "Video link with timestamp copied to clipboard";
+"CANCEL" = "Cancel";

@@ -6,54 +6,58 @@
 
 #import <YouTubeHeader/YTColor.h>
 #import <YouTubeHeader/QTMIcon.h>
-#import <YouTubeHeader/YTActionSheetController.h>
-#import <YouTubeHeader/YTActionSheetAction.h>
-#import <YouTubeHeader/YTMainAppVideoPlayerOverlayViewController.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayView.h>
+#import <YouTubeHeader/YTMainAppVideoPlayerOverlayViewController.h>
 
 #define TweakKey @"YouShare"
 
-#pragma mark - Interfaces
+#pragma mark - YouTube Private Interfaces (CORRECT)
 
-@interface YTMainAppVideoPlayerOverlayViewController (YouShare)
-@property (nonatomic, assign) YTPlayerViewController *parentViewController;
+/**
+ * NOTE:
+ * These headers are intentionally incomplete in YouTubeHeader.
+ * We must forward-declare the selectors that ACTUALLY exist at runtime.
+ */
+
+@interface YTActionSheetController : NSObject
 @end
 
-@interface YTMainAppVideoPlayerOverlayView (YouShare)
-@property (nonatomic, weak, readwrite) YTMainAppVideoPlayerOverlayViewController *delegate;
+@interface YTActionSheetController (YouShare)
+- (void)addAction:(id)action;
 @end
 
-@interface YTPlayerViewController (YouShare)
+@interface YTActionSheetAction : NSObject
++ (instancetype)actionWithTitle:(NSString *)title
+                         handler:(void (^)(YTActionSheetAction *action))handler;
+@end
+
+@interface YTPlayerViewController : UIViewController
+@property (nonatomic, copy) NSString *currentVideoID;
 @property (nonatomic, assign) CGFloat currentVideoMediaTime;
-@property (nonatomic, assign) NSString *currentVideoID;
 @property (nonatomic, assign) BOOL isPlayingAd;
 - (id)activeVideoPlayerOverlay;
 - (void)didPressYouShare;
 @end
 
-@interface YTMainAppControlsOverlayView (YouShare)
-@property (nonatomic, assign) YTPlayerViewController *playerViewController;
+@interface YTMainAppVideoPlayerOverlayViewController (YouShare)
+@property (nonatomic, assign) YTPlayerViewController *parentViewController;
+- (void)presentActionSheet:(id)sheet;
+@end
+
+@interface YTMainAppControlsOverlayView : UIView
+@property (nonatomic, weak) YTPlayerViewController *playerViewController;
 @end
 
 @interface YTInlinePlayerBarController : NSObject
 @end
 
-@interface YTInlinePlayerBarContainerView (YouShare)
+@interface YTInlinePlayerBarContainerView : UIView
 @property (nonatomic, strong) YTInlinePlayerBarController *delegate;
 @end
 
-@interface YTHUDMessage : NSObject
-+ (id)messageWithText:(id)text;
-@end
+#pragma mark - Bundle / Localization
 
-@interface GOOHUDManagerInternal : NSObject
-+ (id)sharedInstance;
-- (void)showMessageMainThread:(id)message;
-@end
-
-#pragma mark - Bundle / Utils
-
-NSBundle *YouShareBundle(void) {
+static NSBundle *YouShareBundle(void) {
     static NSBundle *bundle;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -80,7 +84,7 @@ static UIImage *YSShareImage(void) {
         color:[%c(YTColor) white1]];
 }
 
-#pragma mark - Main Logic (YouTube Menu)
+#pragma mark - Main Logic (Native YouTube Menu)
 
 %group Main
 %hook YTPlayerViewController
@@ -88,116 +92,113 @@ static UIImage *YSShareImage(void) {
 %new
 - (void)didPressYouShare {
 
-    if (!self.currentVideoID || self.isPlayingAd) return;
+    // Safety checks
+    if (!self.currentVideoID) return;
+    if (self.isPlayingAd) return;
 
-    NSInteger seconds = (NSInteger)floor(self.currentVideoMediaTime);
+    NSInteger seconds =
+        (NSInteger)floor(self.currentVideoMediaTime);
 
     NSString *baseURL =
         [NSString stringWithFormat:
-            @"https://youtube.com/watch?v=%@", self.currentVideoID];
+            @"https://youtube.com/watch?v=%@",
+            self.currentVideoID];
 
     NSString *timestampURL =
         [NSString stringWithFormat:
             @"%@&t=%lds", baseURL, (long)seconds];
 
-    id overlay = [self activeVideoPlayerOverlay];
+    YTMainAppVideoPlayerOverlayViewController *overlay =
+        [self activeVideoPlayerOverlay];
+
     if (!overlay) return;
 
     // Native YouTube action sheet
     YTActionSheetController *sheet =
-        [[%c(YTActionSheetController) alloc]
-            initWithTitle:nil message:nil];
-
-    __weak typeof(self) weakSelf = self;
+        [[%c(YTActionSheetController) alloc] init];
 
     // Copy URL
     YTActionSheetAction *copyURL =
-        [[%c(YTActionSheetAction) alloc]
-            initWithTitle:YSLocalized(@"COPY_URL")
-                    image:nil
-                    style:YTActionSheetActionStyleDefault
-                  handler:^(YTActionSheetAction *action) {
+        [%c(YTActionSheetAction)
+            actionWithTitle:YSLocalized(@"COPY_URL")
+                    handler:^(__unused YTActionSheetAction *a) {
 
         UIPasteboard.generalPasteboard.string = baseURL;
-
-        [[%c(GOOHUDManagerInternal) sharedInstance]
-            showMessageMainThread:
-                [%c(YTHUDMessage)
-                    messageWithText:
-                        YSLocalized(@"URL_COPIED")]];
     }];
 
-    // Copy URL + timestamp
+    // Copy URL with timestamp
     YTActionSheetAction *copyTimestamp =
-        [[%c(YTActionSheetAction) alloc]
-            initWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP")
-                    image:nil
-                    style:YTActionSheetActionStyleDefault
-                  handler:^(YTActionSheetAction *action) {
+        [%c(YTActionSheetAction)
+            actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP")
+                    handler:^(__unused YTActionSheetAction *a) {
 
         UIPasteboard.generalPasteboard.string = timestampURL;
-
-        [[%c(GOOHUDManagerInternal) sharedInstance]
-            showMessageMainThread:
-                [%c(YTHUDMessage)
-                    messageWithText:
-                        YSLocalized(@"URL_TIMESTAMP_COPIED")]];
     }];
 
     // Cancel
     YTActionSheetAction *cancel =
-        [[%c(YTActionSheetAction) alloc]
-            initWithTitle:YSLocalized(@"CANCEL")
-                    image:nil
-                    style:YTActionSheetActionStyleCancel
-                  handler:nil];
+        [%c(YTActionSheetAction)
+            actionWithTitle:YSLocalized(@"CANCEL")
+                    handler:nil];
 
     [sheet addAction:copyURL];
     [sheet addAction:copyTimestamp];
     [sheet addAction:cancel];
 
-    // Present using YouTube overlay controller (important)
-    [overlay presentViewController:sheet animated:YES completion:nil];
+    // IMPORTANT: YouTube presenter (NOT UIKit)
+    [overlay presentActionSheet:sheet];
 }
 
 %end
 %end
 
-#pragma mark - Top Button
+#pragma mark - Top Overlay Button
 
 %group Top
 %hook YTMainAppControlsOverlayView
 
-- (UIImage *)buttonImage:(NSString *)tid {
-    return [tid isEqualToString:TweakKey] ? YSShareImage() : %orig;
+- (UIImage *)buttonImage:(NSString *)tweakId {
+    return [tweakId isEqualToString:TweakKey]
+        ? YSShareImage()
+        : %orig;
 }
 
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
-    YTMainAppVideoPlayerOverlayView *view =
+
+    YTMainAppVideoPlayerOverlayView *overlayView =
         (YTMainAppVideoPlayerOverlayView *)self.superview;
+
     YTPlayerViewController *vc =
-        view.delegate.parentViewController;
+        overlayView.delegate.parentViewController;
+
     [vc didPressYouShare];
 }
 
 %end
 %end
 
-#pragma mark - Bottom Button
+#pragma mark - Bottom Bar Button
 
 %group Bottom
 %hook YTInlinePlayerBarContainerView
 
-- (UIImage *)buttonImage:(NSString *)tid {
-    return [tid isEqualToString:TweakKey] ? YSShareImage() : %orig;
+- (UIImage *)buttonImage:(NSString *)tweakId {
+    return [tweakId isEqualToString:TweakKey]
+        ? YSShareImage()
+        : %orig;
 }
 
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
-    YTMainAppVideoPlayerOverlayViewController *overlay =
+
+    id overlayVC =
         [self.delegate valueForKey:@"_delegate"];
-    [overlay.parentViewController didPressYouShare];
+
+    YTPlayerViewController *vc =
+        [overlayVC parentViewController];
+
+    [vc didPressYouShare];
 }
 
 %end
@@ -206,9 +207,10 @@ static UIImage *YSShareImage(void) {
 #pragma mark - Init
 
 %ctor {
+
     initYTVideoOverlay(TweakKey, @{
         AccessibilityLabelKey : @"Copy Video URL",
-        SelectorKey : @"didPressYouShare:",
+        SelectorKey           : @"didPressYouShare:",
     });
 
     %init(Main);

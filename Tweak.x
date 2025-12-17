@@ -1,16 +1,11 @@
 #import <Foundation/Foundation.h>
-#import <AVFoundation/AVFoundation.h>
-#import <AVKit/AVKit.h>
 #import <UIKit/UIKit.h>
-
 #import "../YTVideoOverlay/Header.h"
 #import "../YTVideoOverlay/Init.x"
 #import <YouTubeHeader/YTColor.h>
 #import <YouTubeHeader/QTMIcon.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayViewController.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayView.h>
-#import <YouTubeHeader/YTActionSheetController.h>
-#import <YouTubeHeader/YTActionSheetAction.h>
 
 #define TweakKey @"YouShare"
 
@@ -89,32 +84,28 @@ static inline NSString *YSLocalized(NSString *key, NSString *comment) {
 
 %group Main
 %hook YTPlayerViewController
-
 %new
 - (void)didPressYouShare {
-
-    if (!self.currentVideoID || self.isPlayingAd)
+    if (!self.currentVideoID)
+        return;
+    if (self.isPlayingAd)
         return;
 
     // URLs
     NSString *baseURL =
         [NSString stringWithFormat:@"https://youtube.com/watch?v=%@", self.currentVideoID];
-
     NSInteger seconds = (NSInteger)floor(self.currentVideoMediaTime);
     NSString *timestampURL =
         [NSString stringWithFormat:@"%@&t=%lds", baseURL, (long)seconds];
 
-    // Get active overlay (for anchor)
     id overlay = [self activeVideoPlayerOverlay];
     if (!overlay || ![overlay respondsToSelector:@selector(videoPlayerOverlayView)])
         return;
-
     YTMainAppVideoPlayerOverlayView *overlayView =
         [overlay videoPlayerOverlayView];
     if (!overlayView)
         return;
 
-    // Pick anchor view (top controls preferred)
     UIView *anchorView = nil;
     if ([overlayView respondsToSelector:@selector(controlsOverlayView)]) {
         anchorView = [overlayView controlsOverlayView];
@@ -130,15 +121,12 @@ static inline NSString *YSLocalized(NSString *key, NSString *comment) {
         [UIAlertController alertControllerWithTitle:nil
                                             message:nil
                                      preferredStyle:UIAlertControllerStyleActionSheet];
-
     // Copy URL
     UIAlertAction *copyURL =
         [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL", nil)
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *a) {
-
         UIPasteboard.generalPasteboard.string = baseURL;
-
         [[%c(GOOHUDManagerInternal) sharedInstance]
             showMessageMainThread:
                 [%c(YTHUDMessage)
@@ -150,9 +138,7 @@ static inline NSString *YSLocalized(NSString *key, NSString *comment) {
         [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP", nil)
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *a) {
-
         UIPasteboard.generalPasteboard.string = timestampURL;
-
         [[%c(GOOHUDManagerInternal) sharedInstance]
             showMessageMainThread:
                 [%c(YTHUDMessage)
@@ -164,7 +150,6 @@ static inline NSString *YSLocalized(NSString *key, NSString *comment) {
         [UIAlertAction actionWithTitle:YSLocalized(@"CANCEL", @"Cancel")
                                  style:UIAlertActionStyleCancel
                                handler:nil];
-
     [alert addAction:copyURL];
     [alert addAction:copyTimestamp];
     [alert addAction:cancel];
@@ -175,7 +160,6 @@ static inline NSString *YSLocalized(NSString *key, NSString *comment) {
         popover.sourceRect = anchorView.bounds;
         popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
     }
-
     // Present from overlay controller
     [overlay presentViewController:alert animated:YES completion:nil];
 }

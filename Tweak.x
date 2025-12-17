@@ -36,10 +36,6 @@
 - (void)didPressYouShare:(id)arg;
 @end
 
-@interface YTActionSheetController (YouShare)
-- (void)addAction:(id)action;
-@end
-
 // For displaying snackbars - @theRealfoxster
 @interface YTHUDMessage : NSObject
 + (id)messageWithText:(id)text;

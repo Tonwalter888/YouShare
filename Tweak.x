@@ -69,12 +69,13 @@ static UIImage *shareImage(NSString *qualityLabel) {
     return [%c(QTMIcon) tintImage:[UIImage imageNamed:[NSString stringWithFormat:@"Share@%@", qualityLabel] inBundle: YouShareBundle() compatibleWithTraitCollection:nil] color:[%c(YTColor) white1]];
 }
 
-static inline NSString *YSLocalized(NSString *key, NSString *comment) {
+// For UIKit localizations
+static inline NSString *YSLocalized(NSString *key) {
     return NSLocalizedStringFromTableInBundle(
         key,
         nil,
         YouShareBundle() ?: [NSBundle mainBundle],
-        comment
+        nil
     );
 }
 
@@ -87,30 +88,12 @@ static inline NSString *YSLocalized(NSString *key, NSString *comment) {
     if (self.isPlayingAd)
         return;
 
-    // URLs
+    // Prepare video link
     NSString *baseURL =
         [NSString stringWithFormat:@"https://youtube.com/watch?v=%@", self.currentVideoID];
     NSInteger seconds = (NSInteger)floor(self.currentVideoMediaTime);
     NSString *timestampURL =
         [NSString stringWithFormat:@"%@&t=%lds", baseURL, (long)seconds];
-
-    id overlay = [self activeVideoPlayerOverlay];
-    if (!overlay || ![overlay respondsToSelector:@selector(videoPlayerOverlayView)])
-        return;
-    YTMainAppVideoPlayerOverlayView *overlayView =
-        [overlay videoPlayerOverlayView];
-    if (!overlayView)
-        return;
-
-    UIView *anchorView = nil;
-    if ([overlayView respondsToSelector:@selector(controlsOverlayView)]) {
-        anchorView = [overlayView controlsOverlayView];
-    }
-    if (!anchorView && overlayView.playerBar) {
-        anchorView = overlayView.playerBar;
-    }
-    if (!anchorView)
-        return;
 
     // Create UIKit action sheet
     UIAlertController *alert =
@@ -119,45 +102,50 @@ static inline NSString *YSLocalized(NSString *key, NSString *comment) {
                                      preferredStyle:UIAlertControllerStyleActionSheet];
     // Copy URL
     UIAlertAction *copyURL =
-        [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL", nil)
+        [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *a) {
         UIPasteboard.generalPasteboard.string = baseURL;
         [[%c(GOOHUDManagerInternal) sharedInstance]
             showMessageMainThread:
                 [%c(YTHUDMessage)
-                    messageWithText:YSLocalized(@"URL_COPIED", nil)]];
+                    messageWithText:YSLocalized(@"URL_COPIED")]];
     }];
 
     // Copy URL with timestamp
     UIAlertAction *copyTimestamp =
-        [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP", nil)
+        [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *a) {
         UIPasteboard.generalPasteboard.string = timestampURL;
         [[%c(GOOHUDManagerInternal) sharedInstance]
             showMessageMainThread:
                 [%c(YTHUDMessage)
-                    messageWithText:YSLocalized(@"URL_TIMESTAMP_COPIED", nil)]];
+                    messageWithText:YSLocalized(@"URL_TIMESTAMP_COPIED")]];
     }];
 
     // Cancel
     UIAlertAction *cancel =
-        [UIAlertAction actionWithTitle:YSLocalized(@"CANCEL", @"Cancel")
+        [UIAlertAction actionWithTitle:YSLocalized(@"CANCEL")
                                  style:UIAlertActionStyleCancel
                                handler:nil];
     [alert addAction:copyURL];
     [alert addAction:copyTimestamp];
     [alert addAction:cancel];
 
-    UIPopoverPresentationController *popover = alert.popoverPresentationController;
+    UIViewController *presenter =
+        (UIViewController *)[self activeVideoPlayerOverlay];
+    if (!presenter) return;
+
+    // Prevent the dialog crashes in iPad
+    UIPopoverPresentationController *popover =
+        alert.popoverPresentationController;
     if (popover) {
-        popover.sourceView = anchorView;
-        popover.sourceRect = anchorView.bounds;
-        popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
+        popover.sourceView = presenter.view;
+        popover.sourceRect = presenter.view.bounds;
+        popover.permittedArrowDirections = 0; // keeps the dialog centered
     }
-    // Present from overlay controller
-    [overlay presentViewController:alert animated:YES completion:nil];
+    [presenter presentViewController:alert animated:YES completion:nil];
 }
 
 %end

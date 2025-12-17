@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
+#import <UIKit/UIKit.h>
 
 #import "../YTVideoOverlay/Header.h"
 #import "../YTVideoOverlay/Init.x"
@@ -92,78 +93,97 @@ static inline NSString *YSLocalized(NSString *key, NSString *comment) {
 
 %group Main
 %hook YTPlayerViewController
+
 %new
 - (void)didPressYouShare {
-    if (!self.currentVideoID)
+
+    if (!self.currentVideoID || self.isPlayingAd)
         return;
 
-    // URL
+    // URLs
     NSString *baseURL =
         [NSString stringWithFormat:@"https://youtube.com/watch?v=%@", self.currentVideoID];
+
     NSInteger seconds = (NSInteger)floor(self.currentVideoMediaTime);
     NSString *timestampURL =
         [NSString stringWithFormat:@"%@&t=%lds", baseURL, (long)seconds];
 
-    // Localized strings
-    NSString *copyURLTitle =
-        YSLocalized(@"COPY_URL", @"Action title: Copy URL");
+    // Get active overlay (for anchor)
+    id overlay = [self activeVideoPlayerOverlay];
+    if (!overlay || ![overlay respondsToSelector:@selector(videoPlayerOverlayView)])
+        return;
 
-    NSString *copyTimestampTitle =
-        YSLocalized(@"COPY_URL_TIMESTAMP", @"Action title: Copy URL with timestamp");
+    YTMainAppVideoPlayerOverlayView *overlayView =
+        [overlay videoPlayerOverlayView];
+    if (!overlayView)
+        return;
 
-    NSString *urlCopiedMsg =
-        YSLocalized(@"URL_COPIED", @"Toast when URL is copied");
+    // Pick anchor view (top controls preferred)
+    UIView *anchorView = nil;
+    if ([overlayView respondsToSelector:@selector(controlsOverlayView)]) {
+        anchorView = [overlayView controlsOverlayView];
+    }
+    if (!anchorView && overlayView.playerBar) {
+        anchorView = overlayView.playerBar;
+    }
+    if (!anchorView)
+        return;
 
-    NSString *timestampCopiedMsg =
-        YSLocalized(@"URL_TIMESTAMP_COPIED", @"Toast when URL with timestamp is copied");
-
-    // Action sheet
-    YTActionSheetController *sheet =
-        [%c(YTActionSheetController) actionSheetController];
-    UIImage *shareIcon = shareImage(@"3");
-    UIImage *timestampIcon = timestampImage(@"3");
+    // Create UIKit action sheet
+    UIAlertController *alert =
+        [UIAlertController alertControllerWithTitle:nil
+                                            message:nil
+                                     preferredStyle:UIAlertControllerStyleActionSheet];
 
     // Copy URL
-    YTActionSheetAction *copyURL =
-        [%c(YTActionSheetAction)
-            actionWithTitle:copyURLTitle
-            iconImage:shareIcon
-            style:0
-            handler:^(YTActionSheetAction *action) {
-                UIPasteboard.generalPasteboard.string = baseURL;
-                [[%c(GOOHUDManagerInternal) sharedInstance]
-                    showMessageMainThread:
-                        [%c(YTHUDMessage) messageWithText:urlCopiedMsg]];
-                action.shouldDismissOnAction = YES;
-            }];
-    [sheet addAction:copyURL];
+    UIAlertAction *copyURL =
+        [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL", nil)
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *a) {
+
+        UIPasteboard.generalPasteboard.string = baseURL;
+
+        [[%c(GOOHUDManagerInternal) sharedInstance]
+            showMessageMainThread:
+                [%c(YTHUDMessage)
+                    messageWithText:YSLocalized(@"URL_COPIED", nil)]];
+    }];
 
     // Copy URL with timestamp
-    YTActionSheetAction *copyTimestamp =
-        [%c(YTActionSheetAction)
-            actionWithTitle:copyTimestampTitle
-            iconImage:timestampIcon
-            style:0
-            handler:^(YTActionSheetAction *action) {
-                UIPasteboard.generalPasteboard.string = timestampURL;
-                [[%c(GOOHUDManagerInternal) sharedInstance]
-                    showMessageMainThread:
-                        [%c(YTHUDMessage) messageWithText:timestampCopiedMsg]];
-                action.shouldDismissOnAction = YES;
-            }];
-    [sheet addAction:copyTimestamp];
+    UIAlertAction *copyTimestamp =
+        [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP", nil)
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *a) {
 
-    // Cancel button
-    [sheet addCancelActionIfNeeded];
+        UIPasteboard.generalPasteboard.string = timestampURL;
 
-    UIViewController *presenter = self;
-    while (presenter.presentedViewController) {
-        presenter = presenter.presentedViewController;
+        [[%c(GOOHUDManagerInternal) sharedInstance]
+            showMessageMainThread:
+                [%c(YTHUDMessage)
+                    messageWithText:YSLocalized(@"URL_TIMESTAMP_COPIED", nil)]];
+    }];
+
+    // Cancel
+    UIAlertAction *cancel =
+        [UIAlertAction actionWithTitle:YSLocalized(@"CANCEL", @"Cancel")
+                                 style:UIAlertActionStyleCancel
+                               handler:nil];
+
+    [alert addAction:copyURL];
+    [alert addAction:copyTimestamp];
+    [alert addAction:cancel];
+
+    UIPopoverPresentationController *popover = alert.popoverPresentationController;
+    if (popover) {
+        popover.sourceView = anchorView;
+        popover.sourceRect = anchorView.bounds;
+        popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
     }
-    [sheet presentFromViewController:presenter
-                            animated:YES
-                          completion:nil];
+
+    // Present from overlay controller
+    [overlay presentViewController:alert animated:YES completion:nil];
 }
+
 %end
 %end
 

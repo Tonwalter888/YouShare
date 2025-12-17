@@ -138,7 +138,7 @@ static inline NSString *YSLocalized(NSString *key) {
         (UIViewController *)[self activeVideoPlayerOverlay];
     if (!presenter) return;
 
-    // Prevent the dialog crashes in iPad
+    // Prevent the dialog crashes on iPad
     UIPopoverPresentationController *popover =
         alert.popoverPresentationController;
     if (popover) {

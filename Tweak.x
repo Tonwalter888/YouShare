@@ -1,61 +1,32 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-
 #import "../YTVideoOverlay/Header.h"
 #import "../YTVideoOverlay/Init.x"
-
 #import <YouTubeHeader/YTColor.h>
 #import <YouTubeHeader/QTMIcon.h>
-#import <YouTubeHeader/YTMainAppVideoPlayerOverlayView.h>
+#import <YouTubeHeader/YTPlayerViewController.h>
+#import <YouTubeHeader/YTMainAppControlsOverlayView.h>
+#import <YouTubeHeader/YTInlinePlayerBarContainerView.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayViewController.h>
 
 #define TweakKey @"YouShare"
 
-#pragma mark - YouTube Private Interfaces (CORRECT)
-
-/**
- * NOTE:
- * These headers are intentionally incomplete in YouTubeHeader.
- * We must forward-declare the selectors that ACTUALLY exist at runtime.
- */
+#pragma mark - YouTube private menu (forward declarations ONLY)
 
 @interface YTActionSheetController : NSObject
-@end
-
-@interface YTActionSheetController (YouShare)
 - (void)addAction:(id)action;
 @end
 
 @interface YTActionSheetAction : NSObject
 + (instancetype)actionWithTitle:(NSString *)title
-                         handler:(void (^)(YTActionSheetAction *action))handler;
-@end
-
-@interface YTPlayerViewController : UIViewController
-@property (nonatomic, copy) NSString *currentVideoID;
-@property (nonatomic, assign) CGFloat currentVideoMediaTime;
-@property (nonatomic, assign) BOOL isPlayingAd;
-- (id)activeVideoPlayerOverlay;
-- (void)didPressYouShare;
+                         handler:(void (^)(id action))handler;
 @end
 
 @interface YTMainAppVideoPlayerOverlayViewController (YouShare)
-@property (nonatomic, assign) YTPlayerViewController *parentViewController;
 - (void)presentActionSheet:(id)sheet;
 @end
 
-@interface YTMainAppControlsOverlayView : UIView
-@property (nonatomic, weak) YTPlayerViewController *playerViewController;
-@end
-
-@interface YTInlinePlayerBarController : NSObject
-@end
-
-@interface YTInlinePlayerBarContainerView : UIView
-@property (nonatomic, strong) YTInlinePlayerBarController *delegate;
-@end
-
-#pragma mark - Bundle / Localization
+#pragma mark - Bundle & localization
 
 static NSBundle *YouShareBundle(void) {
     static NSBundle *bundle;
@@ -76,6 +47,8 @@ static inline NSString *YSLocalized(NSString *key) {
         YouShareBundle() ?: [NSBundle mainBundle], nil);
 }
 
+#pragma mark - Icon helper
+
 static UIImage *YSShareImage(void) {
     return [%c(QTMIcon)
         tintImage:[UIImage imageNamed:@"Share@3"
@@ -84,7 +57,7 @@ static UIImage *YSShareImage(void) {
         color:[%c(YTColor) white1]];
 }
 
-#pragma mark - Main Logic (Native YouTube Menu)
+#pragma mark - Main logic (YouTube native menu)
 
 %group Main
 %hook YTPlayerViewController
@@ -92,67 +65,54 @@ static UIImage *YSShareImage(void) {
 %new
 - (void)didPressYouShare {
 
-    // Safety checks
-    if (!self.currentVideoID) return;
-    if (self.isPlayingAd) return;
+    if (!self.currentVideoID || self.isPlayingAd) return;
 
     NSInteger seconds =
         (NSInteger)floor(self.currentVideoMediaTime);
 
     NSString *baseURL =
         [NSString stringWithFormat:
-            @"https://youtube.com/watch?v=%@",
-            self.currentVideoID];
+            @"https://youtube.com/watch?v=%@", self.currentVideoID];
 
     NSString *timestampURL =
         [NSString stringWithFormat:
             @"%@&t=%lds", baseURL, (long)seconds];
 
     YTMainAppVideoPlayerOverlayViewController *overlay =
-        [self activeVideoPlayerOverlay];
+        (YTMainAppVideoPlayerOverlayViewController *)
+            [self activeVideoPlayerOverlay];
 
     if (!overlay) return;
 
-    // Native YouTube action sheet
     YTActionSheetController *sheet =
         [[%c(YTActionSheetController) alloc] init];
 
-    // Copy URL
-    YTActionSheetAction *copyURL =
+    [sheet addAction:
         [%c(YTActionSheetAction)
             actionWithTitle:YSLocalized(@"COPY_URL")
-                    handler:^(__unused YTActionSheetAction *a) {
-
+                    handler:^(__unused id a) {
         UIPasteboard.generalPasteboard.string = baseURL;
-    }];
+    }]];
 
-    // Copy URL with timestamp
-    YTActionSheetAction *copyTimestamp =
+    [sheet addAction:
         [%c(YTActionSheetAction)
             actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP")
-                    handler:^(__unused YTActionSheetAction *a) {
-
+                    handler:^(__unused id a) {
         UIPasteboard.generalPasteboard.string = timestampURL;
-    }];
+    }]];
 
-    // Cancel
-    YTActionSheetAction *cancel =
+    [sheet addAction:
         [%c(YTActionSheetAction)
             actionWithTitle:YSLocalized(@"CANCEL")
-                    handler:nil];
+                    handler:nil]];
 
-    [sheet addAction:copyURL];
-    [sheet addAction:copyTimestamp];
-    [sheet addAction:cancel];
-
-    // IMPORTANT: YouTube presenter (NOT UIKit)
     [overlay presentActionSheet:sheet];
 }
 
 %end
 %end
 
-#pragma mark - Top Overlay Button
+#pragma mark - Top overlay button
 
 %group Top
 %hook YTMainAppControlsOverlayView
@@ -165,20 +125,13 @@ static UIImage *YSShareImage(void) {
 
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
-
-    YTMainAppVideoPlayerOverlayView *overlayView =
-        (YTMainAppVideoPlayerOverlayView *)self.superview;
-
-    YTPlayerViewController *vc =
-        overlayView.delegate.parentViewController;
-
-    [vc didPressYouShare];
+    [self.playerViewController didPressYouShare];
 }
 
 %end
 %end
 
-#pragma mark - Bottom Bar Button
+#pragma mark - Bottom bar button
 
 %group Bottom
 %hook YTInlinePlayerBarContainerView
@@ -196,7 +149,8 @@ static UIImage *YSShareImage(void) {
         [self.delegate valueForKey:@"_delegate"];
 
     YTPlayerViewController *vc =
-        [overlayVC parentViewController];
+        (YTPlayerViewController *)
+            [overlayVC parentViewController];
 
     [vc didPressYouShare];
 }

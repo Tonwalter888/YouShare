@@ -85,6 +85,7 @@ static inline NSString *YSLocalized(NSString *key) {
 - (void)didPressYouShare {
     if (!self.currentVideoID)
         return;
+
     if (self.isPlayingAd)
         return;
 

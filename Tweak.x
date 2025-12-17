@@ -1,7 +1,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
 #import "../YTVideoOverlay/Header.h"
 #import "../YTVideoOverlay/Init.x"
+
 #import <YouTubeHeader/YTColor.h>
 #import <YouTubeHeader/QTMIcon.h>
 #import <YouTubeHeader/YTPlayerViewController.h>
@@ -11,19 +13,27 @@
 
 #define TweakKey @"YouShare"
 
-#pragma mark - YouTube private menu (forward declarations ONLY)
+#pragma mark - Make Logos selector visible (IMPORTANT)
 
-@interface YTActionSheetController : NSObject
-- (void)addAction:(id)action;
+@interface YTPlayerViewController (YouShare)
+- (void)didPressYouShare;
 @end
+
+#pragma mark - YouTube native menu (forward declarations ONLY)
 
 @interface YTActionSheetAction : NSObject
 + (instancetype)actionWithTitle:(NSString *)title
-                         handler:(void (^)(id action))handler;
+                          style:(NSInteger)style
+                        handler:(void (^)(YTActionSheetAction *action))handler;
 @end
 
-@interface YTMainAppVideoPlayerOverlayViewController (YouShare)
-- (void)presentActionSheet:(id)sheet;
+@interface YTActionSheetController : NSObject
++ (instancetype)actionSheetController;
+- (void)addAction:(id)action;
+- (void)addCancelActionIfNeeded;
+- (void)presentFromViewController:(UIViewController *)viewController
+                          animated:(BOOL)animated
+                        completion:(void (^)(void))completion;
 @end
 
 #pragma mark - Bundle & localization
@@ -57,7 +67,7 @@ static UIImage *YSShareImage(void) {
         color:[%c(YTColor) white1]];
 }
 
-#pragma mark - Main logic (YouTube native menu)
+#pragma mark - MAIN LOGIC (YouTube native menu)
 
 %group Main
 %hook YTPlayerViewController
@@ -78,41 +88,40 @@ static UIImage *YSShareImage(void) {
         [NSString stringWithFormat:
             @"%@&t=%lds", baseURL, (long)seconds];
 
-    YTMainAppVideoPlayerOverlayViewController *overlay =
-        (YTMainAppVideoPlayerOverlayViewController *)
-            [self activeVideoPlayerOverlay];
-
+    UIViewController *overlay =
+        (UIViewController *)[self activeVideoPlayerOverlay];
     if (!overlay) return;
 
     YTActionSheetController *sheet =
-        [[%c(YTActionSheetController) alloc] init];
+        [%c(YTActionSheetController) actionSheetController];
 
     [sheet addAction:
         [%c(YTActionSheetAction)
             actionWithTitle:YSLocalized(@"COPY_URL")
-                    handler:^(__unused id a) {
+                      style:0
+                    handler:^(__unused YTActionSheetAction *a) {
         UIPasteboard.generalPasteboard.string = baseURL;
     }]];
 
     [sheet addAction:
         [%c(YTActionSheetAction)
             actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP")
-                    handler:^(__unused id a) {
+                      style:0
+                    handler:^(__unused YTActionSheetAction *a) {
         UIPasteboard.generalPasteboard.string = timestampURL;
     }]];
 
-    [sheet addAction:
-        [%c(YTActionSheetAction)
-            actionWithTitle:YSLocalized(@"CANCEL")
-                    handler:nil]];
+    [sheet addCancelActionIfNeeded];
 
-    [overlay presentActionSheet:sheet];
+    [sheet presentFromViewController:overlay
+                            animated:YES
+                          completion:nil];
 }
 
 %end
 %end
 
-#pragma mark - Top overlay button
+#pragma mark - TOP overlay button
 
 %group Top
 %hook YTMainAppControlsOverlayView
@@ -131,7 +140,7 @@ static UIImage *YSShareImage(void) {
 %end
 %end
 
-#pragma mark - Bottom bar button
+#pragma mark - BOTTOM bar button
 
 %group Bottom
 %hook YTInlinePlayerBarContainerView

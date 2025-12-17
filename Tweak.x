@@ -1,13 +1,17 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
 #import "../YTVideoOverlay/Header.h"
 #import "../YTVideoOverlay/Init.x"
+
 #import <YouTubeHeader/YTColor.h>
 #import <YouTubeHeader/QTMIcon.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayViewController.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayView.h>
 
 #define TweakKey @"YouShare"
+
+#pragma mark - Interfaces
 
 @interface YTMainAppVideoPlayerOverlayViewController (YouShare)
 @property (nonatomic, assign) YTPlayerViewController *parentViewController;
@@ -20,12 +24,13 @@
 @interface YTPlayerViewController (YouShare)
 @property (nonatomic, assign) CGFloat currentVideoMediaTime;
 @property (nonatomic, assign) NSString *currentVideoID;
+@property (nonatomic, assign) BOOL isPlayingAd;
+- (id)activeVideoPlayerOverlay;
 - (void)didPressYouShare;
 @end
 
 @interface YTMainAppControlsOverlayView (YouShare)
 @property (nonatomic, assign) YTPlayerViewController *playerViewController;
-- (void)didPressYouShare:(id)arg;
 @end
 
 @interface YTInlinePlayerBarController : NSObject
@@ -33,193 +38,183 @@
 
 @interface YTInlinePlayerBarContainerView (YouShare)
 @property (nonatomic, strong) YTInlinePlayerBarController *delegate;
-- (void)didPressYouShare:(id)arg;
 @end
 
-// For displaying snackbars - @theRealfoxster
 @interface YTHUDMessage : NSObject
 + (id)messageWithText:(id)text;
-- (void)setAction:(id)action;
-@end
-
-@interface GOOHUDMessageAction : NSObject
-- (void)setTitle:(NSString *)title;
-- (void)setHandler:(void (^)(id))handler;
 @end
 
 @interface GOOHUDManagerInternal : NSObject
-- (void)showMessageMainThread:(id)message;
 + (id)sharedInstance;
+- (void)showMessageMainThread:(id)message;
 @end
 
-NSBundle *YouShareBundle() {
-    static NSBundle *bundle = nil;
+#pragma mark - Bundle / Utils
+
+NSBundle *YouShareBundle(void) {
+    static NSBundle *bundle;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSString *tweakBundlePath = [[NSBundle mainBundle] pathForResource:TweakKey ofType:@"bundle"];
-        if (tweakBundlePath)
-            bundle = [NSBundle bundleWithPath:tweakBundlePath];
-        else
-            bundle = [NSBundle bundleWithPath:[NSString stringWithFormat:ROOT_PATH_NS(@"/Library/Application Support/%@.bundle"), TweakKey]];
+        NSString *path =
+            [[NSBundle mainBundle] pathForResource:TweakKey ofType:@"bundle"]
+            ?: [NSString stringWithFormat:
+                ROOT_PATH_NS(@"/Library/Application Support/%@.bundle"), TweakKey];
+        bundle = [NSBundle bundleWithPath:path];
     });
     return bundle;
 }
 
-static UIImage *shareImage(NSString *qualityLabel) {
-    return [%c(QTMIcon) tintImage:[UIImage imageNamed:[NSString stringWithFormat:@"Share@%@", qualityLabel] inBundle: YouShareBundle() compatibleWithTraitCollection:nil] color:[%c(YTColor) white1]];
+static inline NSString *YSLocalized(NSString *key) {
+    return NSLocalizedStringFromTableInBundle(key, nil,
+        YouShareBundle() ?: [NSBundle mainBundle], nil);
 }
 
-static inline NSString *YSLocalized(NSString *key, NSString *comment) {
-    return NSLocalizedStringFromTableInBundle(
-        key,
-        nil,
-        YouShareBundle() ?: [NSBundle mainBundle],
-        comment
-    );
+static UIImage *YSShareImage(void) {
+    return [%c(QTMIcon)
+        tintImage:[UIImage imageNamed:@"Share@3"
+                             inBundle:YouShareBundle()
+        compatibleWithTraitCollection:nil]
+        color:[%c(YTColor) white1]];
 }
+
+#pragma mark - Button Finder (IMPORTANT)
+
+static UIView *YSFindButton(UIView *view) {
+    for (UIView *sub in view.subviews) {
+        if ([sub isKindOfClass:[UIButton class]]) {
+            if ([((UIButton *)sub).accessibilityLabel
+                    isEqualToString:@"Copy Video URL"]) {
+                return sub;
+            }
+        }
+        UIView *found = YSFindButton(sub);
+        if (found) return found;
+    }
+    return nil;
+}
+
+#pragma mark - Main Logic
 
 %group Main
 %hook YTPlayerViewController
+
 %new
 - (void)didPressYouShare {
-    if (!self.currentVideoID)
-        return;
-    if (self.isPlayingAd)
-        return;
 
-    // URLs
-    NSString *baseURL =
-        [NSString stringWithFormat:@"https://youtube.com/watch?v=%@", self.currentVideoID];
+    if (!self.currentVideoID || self.isPlayingAd) return;
+
     NSInteger seconds = (NSInteger)floor(self.currentVideoMediaTime);
+    NSString *baseURL =
+        [NSString stringWithFormat:@"https://youtube.com/watch?v=%@",
+            self.currentVideoID];
     NSString *timestampURL =
         [NSString stringWithFormat:@"%@&t=%lds", baseURL, (long)seconds];
 
     id overlay = [self activeVideoPlayerOverlay];
-    if (!overlay || ![overlay respondsToSelector:@selector(videoPlayerOverlayView)])
-        return;
+    if (![overlay respondsToSelector:@selector(videoPlayerOverlayView)]) return;
+
     YTMainAppVideoPlayerOverlayView *overlayView =
         [overlay videoPlayerOverlayView];
-    if (!overlayView)
-        return;
+    if (!overlayView) return;
 
-    UIView *anchorView = nil;
-    if ([overlayView respondsToSelector:@selector(controlsOverlayView)]) {
-        anchorView = [overlayView controlsOverlayView];
-    }
-    if (!anchorView && overlayView.playerBar) {
-        anchorView = overlayView.playerBar;
-    }
-    if (!anchorView)
-        return;
+    UIView *anchorView =
+        YSFindButton(overlayView) ?: overlayView;
 
-    // Create UIKit action sheet
     UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:nil
                                             message:nil
                                      preferredStyle:UIAlertControllerStyleActionSheet];
-    // Copy URL
-    UIAlertAction *copyURL =
-        [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL", nil)
+
+    [alert addAction:
+        [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL")
                                  style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *a) {
+                               handler:^(__unused UIAlertAction *a) {
         UIPasteboard.generalPasteboard.string = baseURL;
         [[%c(GOOHUDManagerInternal) sharedInstance]
             showMessageMainThread:
-                [%c(YTHUDMessage)
-                    messageWithText:YSLocalized(@"URL_COPIED", nil)]];
-    }];
+                [%c(YTHUDMessage) messageWithText:
+                    YSLocalized(@"URL_COPIED")]];
+    }]];
 
-    // Copy URL with timestamp
-    UIAlertAction *copyTimestamp =
-        [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP", nil)
+    [alert addAction:
+        [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP")
                                  style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *a) {
+                               handler:^(__unused UIAlertAction *a) {
         UIPasteboard.generalPasteboard.string = timestampURL;
         [[%c(GOOHUDManagerInternal) sharedInstance]
             showMessageMainThread:
-                [%c(YTHUDMessage)
-                    messageWithText:YSLocalized(@"URL_TIMESTAMP_COPIED", nil)]];
-    }];
+                [%c(YTHUDMessage) messageWithText:
+                    YSLocalized(@"URL_TIMESTAMP_COPIED")]];
+    }]];
 
-    // Cancel
-    UIAlertAction *cancel =
-        [UIAlertAction actionWithTitle:YSLocalized(@"CANCEL", @"Cancel")
+    [alert addAction:
+        [UIAlertAction actionWithTitle:YSLocalized(@"CANCEL")
                                  style:UIAlertActionStyleCancel
-                               handler:nil];
-    [alert addAction:copyURL];
-    [alert addAction:copyTimestamp];
-    [alert addAction:cancel];
+                               handler:nil]];
 
-    UIPopoverPresentationController *popover = alert.popoverPresentationController;
+    UIPopoverPresentationController *popover =
+        alert.popoverPresentationController;
     if (popover) {
         popover.sourceView = anchorView;
         popover.sourceRect = anchorView.bounds;
-        popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
+        popover.permittedArrowDirections =
+            UIPopoverArrowDirectionUp | UIPopoverArrowDirectionDown;
     }
-    // Present from overlay controller
+
     [overlay presentViewController:alert animated:YES completion:nil];
 }
 
 %end
 %end
 
-/**
-  * Adds a timestamp copy button to the top area in the video player overlay
-  */
+#pragma mark - Top Button
+
 %group Top
 %hook YTMainAppControlsOverlayView
 
-- (UIImage *)buttonImage:(NSString *)tweakId {
-    return [tweakId isEqualToString:TweakKey] ? shareImage(@"3") : %orig;
+- (UIImage *)buttonImage:(NSString *)tid {
+    return [tid isEqualToString:TweakKey] ? YSShareImage() : %orig;
 }
 
-// Custom method to handle the timestamp button press
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
-    // Call our custom method in the YTPlayerViewController class - this is 
-    // directly accessible in the self.playerViewController property
-    YTMainAppVideoPlayerOverlayView *mainOverlayView = (YTMainAppVideoPlayerOverlayView *)self.superview;
-    YTMainAppVideoPlayerOverlayViewController *mainOverlayController = (YTMainAppVideoPlayerOverlayViewController *)mainOverlayView.delegate;
-    YTPlayerViewController *playerViewController = mainOverlayController.parentViewController;
-    if (playerViewController) {
-        [playerViewController didPressYouShare];
-    }
+    YTMainAppVideoPlayerOverlayView *view =
+        (YTMainAppVideoPlayerOverlayView *)self.superview;
+    YTPlayerViewController *vc =
+        view.delegate.parentViewController;
+    [vc didPressYouShare];
 }
 
 %end
 %end
 
-/**
-  * Adds a timestamp copy button to the bottom area next to the fullscreen button
-  */
+#pragma mark - Bottom Button
+
 %group Bottom
 %hook YTInlinePlayerBarContainerView
 
-- (UIImage *)buttonImage:(NSString *)tweakId {
-    return [tweakId isEqualToString:TweakKey] ? shareImage(@"3") : %orig;
+- (UIImage *)buttonImage:(NSString *)tid {
+    return [tid isEqualToString:TweakKey] ? YSShareImage() : %orig;
 }
 
-// Custom method to handle the timestamp button press
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
-    // Navigate to the YTPlayerViewController class from here
-    YTInlinePlayerBarController *delegate = self.delegate; // for @property
-    YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"]; // for ivars
-    YTPlayerViewController *parentViewController = _delegate.parentViewController;
-    // Call our custom method in the YTPlayerViewController class
-    if (parentViewController) {
-        [parentViewController didPressYouShare];
-    }
+    YTMainAppVideoPlayerOverlayViewController *overlay =
+        [self.delegate valueForKey:@"_delegate"];
+    [overlay.parentViewController didPressYouShare];
 }
 
 %end
 %end
+
+#pragma mark - Init
 
 %ctor {
     initYTVideoOverlay(TweakKey, @{
-        AccessibilityLabelKey: @"Copy Video URL",
-        SelectorKey: @"didPressYouShare:",
+        AccessibilityLabelKey : @"Copy Video URL",
+        SelectorKey : @"didPressYouShare:",
     });
+
     %init(Main);
     %init(Top);
     %init(Bottom);

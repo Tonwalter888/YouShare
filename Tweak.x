@@ -78,10 +78,6 @@ static UIImage *shareImage(NSString *qualityLabel) {
     return [%c(QTMIcon) tintImage:[UIImage imageNamed:[NSString stringWithFormat:@"Share@%@", qualityLabel] inBundle: YouShareBundle() compatibleWithTraitCollection:nil] color:[%c(YTColor) white1]];
 }
 
-static UIImage *timestampImage(NSString *qualityLabel) {
-    return [%c(QTMIcon) tintImage:[UIImage imageNamed:[NSString stringWithFormat:@"Timestamp@%@", qualityLabel] inBundle:YouShareBundle() compatibleWithTraitCollection:nil] color:[%c(YTColor) white1]];
-}
-
 static inline NSString *YSLocalized(NSString *key, NSString *comment) {
     return NSLocalizedStringFromTableInBundle(
         key,

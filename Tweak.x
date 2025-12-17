@@ -143,7 +143,7 @@ static inline NSString *YSLocalized(NSString *key) {
     if (popover) {
         popover.sourceView = presenter.view;
         popover.sourceRect = presenter.view.bounds;
-        popover.permittedArrowDirections = 0; // keeps the dialog centered
+        popover.permittedArrowDirections = 0; // Keeps the dialog centered,I still can't find the proper way to get it shows under the share button.
     }
     [presenter presentViewController:alert animated:YES completion:nil];
 }

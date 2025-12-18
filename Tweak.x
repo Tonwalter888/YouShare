@@ -4,57 +4,42 @@
 #import "../YTVideoOverlay/Header.h"
 #import "../YTVideoOverlay/Init.x"
 
-#import <YouTubeHeader/YTColor.h>
-#import <YouTubeHeader/QTMIcon.h>
 #import <YouTubeHeader/YTPlayerViewController.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayViewController.h>
 #import <YouTubeHeader/YTMainAppControlsOverlayView.h>
 #import <YouTubeHeader/YTInlinePlayerBarContainerView.h>
 #import <YouTubeHeader/YTActionSheetController.h>
 #import <YouTubeHeader/YTActionSheetAction.h>
+#import <YouTubeHeader/YTColor.h>
+#import <YouTubeHeader/QTMIcon.h>
 
 #define TweakKey @"YouShare"
 
-#pragma mark - FIXED Forward Declarations (IMPORTANT)
+#pragma mark - Required Forward Declarations
 
 @interface YTActionSheetController (YouShare)
-- (void)addAction:(id)action;
+- (void)addAction:(YTActionSheetAction *)action;
 @end
 
 @interface YTPlayerViewController (YouShare)
 - (void)didPressYouShare;
 @end
 
-#pragma mark - Bundle / Localization
-
-static NSBundle *YouShareBundle(void) {
-    static NSBundle *bundle;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSString *path =
-            [[NSBundle mainBundle] pathForResource:TweakKey ofType:@"bundle"]
-            ?: [NSString stringWithFormat:
-                ROOT_PATH_NS(@"/Library/Application Support/%@.bundle"), TweakKey];
-        bundle = [NSBundle bundleWithPath:path];
-    });
-    return bundle;
-}
+#pragma mark - Helpers
 
 static inline NSString *YSLocalized(NSString *key) {
     return NSLocalizedStringFromTableInBundle(
         key, nil,
-        YouShareBundle() ?: [NSBundle mainBundle], nil);
+        [NSBundle mainBundle], nil);
 }
 
 static UIImage *YSShareImage(void) {
     return [%c(QTMIcon)
-        tintImage:[UIImage imageNamed:@"Share@3"
-                             inBundle:YouShareBundle()
-        compatibleWithTraitCollection:nil]
+        tintImage:[UIImage imageNamed:@"Share@3"]
         color:[%c(YTColor) white1]];
 }
 
-#pragma mark - Main Logic (Native YouTube Menu)
+#pragma mark - Main Logic
 
 %group Main
 %hook YTPlayerViewController
@@ -65,49 +50,49 @@ static UIImage *YSShareImage(void) {
     if (!self.currentVideoID || self.isPlayingAd)
         return;
 
+    UIViewController *presenter =
+        (UIViewController *)[self activeVideoPlayerOverlay];
+    if (!presenter)
+        return;
+
     NSInteger seconds =
         (NSInteger)floor(self.currentVideoMediaTime);
 
     NSString *baseURL =
         [NSString stringWithFormat:
-            @"https://youtube.com/watch?v=%@",
-            self.currentVideoID];
+            @"https://youtube.com/watch?v=%@", self.currentVideoID];
 
     NSString *timestampURL =
         [NSString stringWithFormat:
             @"%@&t=%lds", baseURL, (long)seconds];
 
-    YTMainAppVideoPlayerOverlayViewController *overlay =
-        (YTMainAppVideoPlayerOverlayViewController *)
-        [self activeVideoPlayerOverlay];
-
-    if (!overlay)
-        return;
-
     YTActionSheetController *sheet =
         [%c(YTActionSheetController) actionSheetController];
 
-    // Copy URL
-    [sheet addAction:
-        [%c(YTActionSheetAction)
-            actionWithTitle:YSLocalized(@"COPY_URL")
-                      style:0
-                    handler:^(__unused id action) {
-        UIPasteboard.generalPasteboard.string = baseURL;
-    }]];
+    if ([sheet respondsToSelector:@selector(addAction:)]) {
 
-    // Copy URL + timestamp
-    [sheet addAction:
-        [%c(YTActionSheetAction)
-            actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP")
-                      style:0
-                    handler:^(__unused id action) {
-        UIPasteboard.generalPasteboard.string = timestampURL;
-    }]];
+        YTActionSheetAction *copyURL =
+            [%c(YTActionSheetAction)
+                actionWithTitle:YSLocalized(@"COPY_URL")
+                          style:0
+                        handler:^(YTActionSheetAction *action) {
+                UIPasteboard.generalPasteboard.string = baseURL;
+            }];
+
+        YTActionSheetAction *copyTimestamp =
+            [%c(YTActionSheetAction)
+                actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP")
+                          style:0
+                        handler:^(YTActionSheetAction *action) {
+                UIPasteboard.generalPasteboard.string = timestampURL;
+            }];
+
+        [sheet addAction:copyURL];
+        [sheet addAction:copyTimestamp];
+    }
 
     [sheet addCancelActionIfNeeded];
-
-    [sheet presentFromViewController:overlay
+    [sheet presentFromViewController:presenter
                             animated:YES
                           completion:nil];
 }
@@ -115,7 +100,7 @@ static UIImage *YSShareImage(void) {
 %end
 %end
 
-#pragma mark - Top Overlay Button
+#pragma mark - Top Button
 
 %group Top
 %hook YTMainAppControlsOverlayView
@@ -134,7 +119,7 @@ static UIImage *YSShareImage(void) {
 %end
 %end
 
-#pragma mark - Bottom Bar Button
+#pragma mark - Bottom Button
 
 %group Bottom
 %hook YTInlinePlayerBarContainerView

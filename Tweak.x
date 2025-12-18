@@ -15,6 +15,16 @@
 
 #define TweakKey @"YouShare"
 
+#pragma mark - FIXED Forward Declarations (IMPORTANT)
+
+@interface YTActionSheetController (YouShare)
+- (void)addAction:(id)action;
+@end
+
+@interface YTPlayerViewController (YouShare)
+- (void)didPressYouShare;
+@end
+
 #pragma mark - Bundle / Localization
 
 static NSBundle *YouShareBundle(void) {
@@ -74,7 +84,6 @@ static UIImage *YSShareImage(void) {
     if (!overlay)
         return;
 
-    // Native YouTube action sheet
     YTActionSheetController *sheet =
         [%c(YTActionSheetController) actionSheetController];
 
@@ -87,7 +96,7 @@ static UIImage *YSShareImage(void) {
         UIPasteboard.generalPasteboard.string = baseURL;
     }]];
 
-    // Copy URL with timestamp
+    // Copy URL + timestamp
     [sheet addAction:
         [%c(YTActionSheetAction)
             actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP")
@@ -96,10 +105,8 @@ static UIImage *YSShareImage(void) {
         UIPasteboard.generalPasteboard.string = timestampURL;
     }]];
 
-    // Cancel (YouTube-style)
     [sheet addCancelActionIfNeeded];
 
-    // Present using YouTube presenter (IMPORTANT)
     [sheet presentFromViewController:overlay
                             animated:YES
                           completion:nil];
@@ -121,7 +128,7 @@ static UIImage *YSShareImage(void) {
 
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
-    [self.playerViewController didPressYouShare];
+    [(YTPlayerViewController *)self.playerViewController didPressYouShare];
 }
 
 %end
@@ -142,7 +149,7 @@ static UIImage *YSShareImage(void) {
 - (void)didPressYouShare:(id)arg {
     id overlayVC = [self.delegate valueForKey:@"_delegate"];
     YTPlayerViewController *vc =
-        [overlayVC parentViewController];
+        (YTPlayerViewController *)[overlayVC parentViewController];
     [vc didPressYouShare];
 }
 
@@ -152,7 +159,6 @@ static UIImage *YSShareImage(void) {
 #pragma mark - Init
 
 %ctor {
-
     initYTVideoOverlay(TweakKey, @{
         AccessibilityLabelKey : @"Copy Video URL",
         SelectorKey           : @"didPressYouShare:",

@@ -6,6 +6,10 @@
 #import <YouTubeHeader/QTMIcon.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayViewController.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayView.h>
+#import <YouTubeHeader/YTMainAppControlsOverlayView.h>
+#import <YouTubeHeader/YTPlayerViewController.h>
+#import <YouTubeHeader/GOOHUDManagerInternal.h>
+#import <YouTubeHeader/YTHUDMessage.h>
 
 #define TweakKey @"YouShare"
 
@@ -18,13 +22,10 @@
 @end
 
 @interface YTPlayerViewController (YouShare)
-@property (nonatomic, assign) CGFloat currentVideoMediaTime;
-@property (nonatomic, assign) NSString *currentVideoID;
 - (void)didPressYouShare;
 @end
 
 @interface YTMainAppControlsOverlayView (YouShare)
-@property (nonatomic, assign) YTPlayerViewController *playerViewController;
 - (void)didPressYouShare:(id)arg;
 @end
 
@@ -34,22 +35,6 @@
 @interface YTInlinePlayerBarContainerView (YouShare)
 @property (nonatomic, strong) YTInlinePlayerBarController *delegate;
 - (void)didPressYouShare:(id)arg;
-@end
-
-// For displaying snackbars - @theRealfoxster
-@interface YTHUDMessage : NSObject
-+ (id)messageWithText:(id)text;
-- (void)setAction:(id)action;
-@end
-
-@interface GOOHUDMessageAction : NSObject
-- (void)setTitle:(NSString *)title;
-- (void)setHandler:(void (^)(id))handler;
-@end
-
-@interface GOOHUDManagerInternal : NSObject
-- (void)showMessageMainThread:(id)message;
-+ (id)sharedInstance;
 @end
 
 NSBundle *YouShareBundle() {
@@ -153,7 +138,7 @@ static inline NSString *YSLocalized(NSString *key) {
 %end
 
 /**
-  * Adds a timestamp copy button to the top area in the video player overlay
+  * Adds a share button to the top area in the video player overlay
   */
 %group Top
 %hook YTMainAppControlsOverlayView
@@ -162,7 +147,7 @@ static inline NSString *YSLocalized(NSString *key) {
     return [tweakId isEqualToString:TweakKey] ? shareImage(@"3") : %orig;
 }
 
-// Custom method to handle the timestamp button press
+// Custom method to handle the share button press
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
     // Call our custom method in the YTPlayerViewController class - this is 
@@ -179,7 +164,7 @@ static inline NSString *YSLocalized(NSString *key) {
 %end
 
 /**
-  * Adds a timestamp copy button to the bottom area next to the fullscreen button
+  * Adds a share button to the bottom area next to the fullscreen button
   */
 %group Bottom
 %hook YTInlinePlayerBarContainerView
@@ -188,7 +173,7 @@ static inline NSString *YSLocalized(NSString *key) {
     return [tweakId isEqualToString:TweakKey] ? shareImage(@"3") : %orig;
 }
 
-// Custom method to handle the timestamp button press
+// Custom method to handle the share button press
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
     // Navigate to the YTPlayerViewController class from here

@@ -191,7 +191,7 @@ static inline NSString *YSLocalized(NSString *key) {
 
 %ctor {
     initYTVideoOverlay(TweakKey, @{
-        AccessibilityLabelKey: @"Copy Video URL",
+        AccessibilityLabelKey: @"YouShare",
         SelectorKey: @"didPressYouShare:",
     });
     %init(Main);

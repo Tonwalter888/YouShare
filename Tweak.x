@@ -98,6 +98,26 @@ static UIImage *YSShareImage(void) {
 }
 
 %end
+
+%hook YTMenuController
+
+- (NSMutableArray <YTActionSheetAction *> *)actionsForRenderers:(NSMutableArray <YTIMenuItemSupportedRenderers *> *)renderers fromView:(UIView *)fromView entry:(id)entry shouldLogItems:(BOOL)shouldLogItems firstResponder:(id)firstResponder {
+    NSUInteger index = [renderers indexOfObjectPassingTest:^BOOL(YTIMenuItemSupportedRenderers *renderer, NSUInteger idx, BOOL *stop) {
+        return YES;
+    }];
+    NSMutableArray <YTActionSheetAction *> *actions = %orig;
+    if (index != NSNotFound) {
+        YTActionSheetAction *action = actions[index];
+        action.handler = ^{
+            [firstResponder didPressVarispeed:fromView];
+        };
+        UIView *elementView = [action.button valueForKey:@"_elementView"];
+        elementView.userInteractionEnabled = NO;
+    }
+    return actions;
+}
+
+%end
 %end
 
 #pragma mark - Top Button

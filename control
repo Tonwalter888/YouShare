@@ -1,4 +1,4 @@
-Package: com.water888.youshare
+Package: dev.water888.youshare
 Name: YouShare
 Version: 1.1.6
 Architecture: iphoneos-arm

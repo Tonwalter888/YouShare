@@ -9,7 +9,6 @@
 #import <YouTubeHeader/YTMainAppControlsOverlayView.h>
 #import <YouTubeHeader/YTPlayerViewController.h>
 #import <YouTubeHeader/GOOHUDManagerInternal.h>
-#import <YouTubeHeader/YTHUDMessage.h>
 
 #define TweakKey @"YouShare"
 

@@ -44,7 +44,7 @@ NSBundle *YouShareBundle() {
         if (tweakBundlePath)
             bundle = [NSBundle bundleWithPath:tweakBundlePath];
         else
-            bundle = [NSBundle bundleWithPath:[NSString stringWithFormat:ROOT_PATH_NS(@"/Library/Application Support/%@.bundle"), TweakKey]];
+            bundle = [NSBundle bundleWithPath:[NSString stringWithFormat:(@"/Library/Application Support/%@.bundle"), TweakKey]];
     });
     return bundle;
 }

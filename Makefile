@@ -19,5 +19,6 @@ TWEAK_NAME = YouShare
 $(TWEAK_NAME)_FILES = Tweak.x
 $(TWEAK_NAME)_CFLAGS = -fobjc-arc
 $(TWEAK_NAME)_FRAMEWORKS = UIKit
+$(TWEAK_NAME)_LIBRARIES = root
 
 include $(THEOS_MAKE_PATH)/tweak.mk

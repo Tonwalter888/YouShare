@@ -17,6 +17,10 @@
 @property (nonatomic, assign) YTPlayerViewController *parentViewController;
 @end
 
+@interface YTMainAppVideoPlayerOverlayView (YouShare)
+@property (nonatomic, weak, readwrite) YTMainAppVideoPlayerOverlayViewController *delegate;
+@end
+
 @interface YTPlayerViewController (YouShare)
 - (void)didPressYouShare;
 @end

@@ -1,10 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <PSHeader/Misc.h>
 #import "../YTVideoOverlay/Header.h"
 #import "../YTVideoOverlay/Init.x"
-#import <YouTubeHeader/YTColor.h>
-#import <YouTubeHeader/QTMIcon.h>
+#import <YouTubeHeader/YTIIcon.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayViewController.h>
 #import <YouTubeHeader/YTMainAppVideoPlayerOverlayView.h>
 #import <YouTubeHeader/YTMainAppControlsOverlayView.h>
@@ -50,29 +48,27 @@ NSBundle *YouShareBundle() {
     return bundle;
 }
 
-static UIImage *shareImage(NSString *qualityLabel) {
-    return [%c(QTMIcon) tintImage:[UIImage imageNamed:[NSString stringWithFormat:@"Share@%@", qualityLabel] inBundle: YouShareBundle() compatibleWithTraitCollection:nil] color:[%c(YTColor) white1]];
+static UIImage *shareIcon(NSString *qualityLabel) {
+    YTIIcon *icon = [%c(YTIIcon) new];
+    icon.iconType = YT_SHARE;
+    if ([icon respondsToSelector:@selector(iconImageWithColor:)]) {
+        return [icon iconImageWithColor:[%c(YTColor) white1]];
+    }
+    if ([icon respondsToSelector:@selector(iconImageWithSelected:)]) {
+        return [icon iconImageWithSelected:NO];
+    }
+    return nil;
 }
 
-// For UIKit localizations
-static inline NSString *YSLocalized(NSString *key) {
-    return NSLocalizedStringFromTableInBundle(
-        key,
-        nil,
-        YouShareBundle() ?: [NSBundle mainBundle],
-        nil
-    );
+static inline NSString *YSLocalizations(NSString *key) {
+    return [YouShareBundle() localizedStringForKey:key value:nil table:nil];
 }
 
 %group Main
 %hook YTPlayerViewController
 %new
 - (void)didPressYouShare {
-    if (!self.currentVideoID)
-        return;
-
-    if (self.isPlayingAd)
-        return;
+    if (!self.currentVideoID || self.isPlayingAd) return;
 
     // Prepare video link
     NSString *baseURL =
@@ -88,31 +84,31 @@ static inline NSString *YSLocalized(NSString *key) {
                                      preferredStyle:UIAlertControllerStyleActionSheet];
     // Copy URL
     UIAlertAction *copyURL =
-        [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL")
+        [UIAlertAction actionWithTitle:YSLocalizations(@"COPY_URL")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *a) {
         UIPasteboard.generalPasteboard.string = baseURL;
         [[%c(GOOHUDManagerInternal) sharedInstance]
             showMessageMainThread:
                 [%c(YTHUDMessage)
-                    messageWithText:YSLocalized(@"URL_COPIED")]];
+                    messageWithText:YSLocalizations(@"URL_COPIED")]];
     }];
 
     // Copy URL with timestamp
     UIAlertAction *copyTimestamp =
-        [UIAlertAction actionWithTitle:YSLocalized(@"COPY_URL_TIMESTAMP")
+        [UIAlertAction actionWithTitle:YSLocalizations(@"COPY_URL_TIMESTAMP")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *a) {
         UIPasteboard.generalPasteboard.string = timestampURL;
         [[%c(GOOHUDManagerInternal) sharedInstance]
             showMessageMainThread:
                 [%c(YTHUDMessage)
-                    messageWithText:YSLocalized(@"URL_TIMESTAMP_COPIED")]];
+                    messageWithText:YSLocalizations(@"URL_TIMESTAMP_COPIED")]];
     }];
 
     // Cancel
     UIAlertAction *cancel =
-        [UIAlertAction actionWithTitle:YSLocalized(@"CANCEL")
+        [UIAlertAction actionWithTitle:YSLocalizations(@"CANCEL")
                                  style:UIAlertActionStyleCancel
                                handler:nil];
     [alert addAction:copyURL];
@@ -144,7 +140,7 @@ static inline NSString *YSLocalized(NSString *key) {
 %hook YTMainAppControlsOverlayView
 
 - (UIImage *)buttonImage:(NSString *)tweakId {
-    return [tweakId isEqualToString:TweakKey] ? shareImage(@"3") : %orig;
+    return [tweakId isEqualToString:TweakKey] ? shareIcon(@"3") : %orig;
 }
 
 // Custom method to handle the share button press
@@ -170,15 +166,15 @@ static inline NSString *YSLocalized(NSString *key) {
 %hook YTInlinePlayerBarContainerView
 
 - (UIImage *)buttonImage:(NSString *)tweakId {
-    return [tweakId isEqualToString:TweakKey] ? shareImage(@"3") : %orig;
+    return [tweakId isEqualToString:TweakKey] ? shareIcon(@"3") : %orig;
 }
 
 // Custom method to handle the share button press
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
     // Navigate to the YTPlayerViewController class from here
-    YTInlinePlayerBarController *delegate = self.delegate; // for @property
-    YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"]; // for ivars
+    YTInlinePlayerBarController *delegate = self.delegate;
+    YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"];
     YTPlayerViewController *parentViewController = _delegate.parentViewController;
     // Call our custom method in the YTPlayerViewController class
     if (parentViewController) {

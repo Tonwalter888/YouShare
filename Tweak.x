@@ -9,15 +9,12 @@
 #import <YouTubeHeader/YTMainAppControlsOverlayView.h>
 #import <YouTubeHeader/YTPlayerViewController.h>
 #import <YouTubeHeader/GOOHUDManagerInternal.h>
+#import <YouTubeHeader/YTInlinePlayerBarContainerView.h>
 
 #define TweakKey @"YouShare"
 
 @interface YTMainAppVideoPlayerOverlayViewController (YouShare)
 @property (nonatomic, assign) YTPlayerViewController *parentViewController;
-@end
-
-@interface YTMainAppVideoPlayerOverlayView (YouShare)
-@property (nonatomic, weak, readwrite) YTMainAppVideoPlayerOverlayViewController *delegate;
 @end
 
 @interface YTPlayerViewController (YouShare)
@@ -32,7 +29,6 @@
 @end
 
 @interface YTInlinePlayerBarContainerView (YouShare)
-@property (nonatomic, strong) YTInlinePlayerBarController *delegate;
 - (void)didPressYouShare:(id)arg;
 @end
 
@@ -147,8 +143,6 @@ static inline NSString *YSLocalizations(NSString *key) {
 // Custom method to handle the share button press
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
-    // Call our custom method in the YTPlayerViewController class - this is 
-    // directly accessible in the self.playerViewController property
     YTMainAppVideoPlayerOverlayView *mainOverlayView = (YTMainAppVideoPlayerOverlayView *)self.superview;
     YTMainAppVideoPlayerOverlayViewController *mainOverlayController = (YTMainAppVideoPlayerOverlayViewController *)mainOverlayView.delegate;
     YTPlayerViewController *playerViewController = mainOverlayController.parentViewController;
@@ -173,11 +167,9 @@ static inline NSString *YSLocalizations(NSString *key) {
 // Custom method to handle the share button press
 %new(v@:@)
 - (void)didPressYouShare:(id)arg {
-    // Navigate to the YTPlayerViewController class from here
     YTInlinePlayerBarController *delegate = self.delegate;
     YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"];
     YTPlayerViewController *parentViewController = _delegate.parentViewController;
-    // Call our custom method in the YTPlayerViewController class
     if (parentViewController) {
         [parentViewController didPressYouShare];
     }

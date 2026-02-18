@@ -69,7 +69,13 @@ static inline NSString *YSLocalizations(NSString *key) {
 %hook YTPlayerViewController
 %new
 - (void)didPressYouShare {
-    if (!self.currentVideoID || self.isPlayingAd) return;
+    if (!self.currentVideoID || self.isPlayingAd) {
+        [[%c(GOOHUDManagerInternal) sharedInstance]
+            showMessageMainThread:
+                [%c(YTHUDMessage)
+                    messageWithText:YSLocalizations(@"ERROR")]];
+        return;
+    }
 
     // Prepare video link
     NSString *baseURL =

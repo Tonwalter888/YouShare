@@ -1,8 +1,9 @@
 "ENABLED" = "Show copy video link button";
 "POSITION" = "Copy video link button position";
-"URL_COPIED" = "Video link copied to clipboard";
+"URL_COPIED" = "Copied video link to clipboard";
 "COPY_URL" = "Copy video link";
 "COPY_URL_TIMESTAMP" = "Copy video link with timestamp";
-"URL_TIMESTAMP_COPIED" = "Video link with timestamp copied to clipboard";
+"URL_TIMESTAMP_COPIED" = " Copied video link with timestamp to clipboard";
 "CANCEL" = "Cancel";
-"ERROR" = "Cannot copy the video link";
+"ERROR_VIDEOID" = "Cannot get the video ID";
+"ERROR_ADS" = "Cannot copy video link while playing ads";

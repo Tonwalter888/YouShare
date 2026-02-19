@@ -67,11 +67,17 @@ static inline NSString *YSLocalizations(NSString *key) {
 %hook YTPlayerViewController
 %new
 - (void)didPressYouShare {
-    if (!self.currentVideoID || self.isPlayingAd) {
+    if (!self.currentVideoID) {
         [[%c(GOOHUDManagerInternal) sharedInstance]
             showMessageMainThread:
                 [%c(YTHUDMessage)
-                    messageWithText:YSLocalizations(@"ERROR")]];
+                    messageWithText:YSLocalizations(@"ERROR_VIDEOID")]];
+        return;
+    } else if (self.isPlayingAd) {
+        [[%c(GOOHUDManagerInternal) sharedInstance]
+            showMessageMainThread:
+                [%c(YTHUDMessage)
+                    messageWithText:YSLocalizations(@"ERROR_ADS")]];
         return;
     }
 
@@ -122,7 +128,6 @@ static inline NSString *YSLocalizations(NSString *key) {
 
     UIViewController *presenter =
         (UIViewController *)[self activeVideoPlayerOverlay];
-    if (!presenter) return;
 
     // Prevent the dialog crashes on iPad
     UIPopoverPresentationController *popover =
@@ -130,7 +135,7 @@ static inline NSString *YSLocalizations(NSString *key) {
     if (popover) {
         popover.sourceView = presenter.view;
         popover.sourceRect = presenter.view.bounds;
-        popover.permittedArrowDirections = 0; // Keeps the dialog centered,I still can't find the proper way to get it shows under the share button.
+        popover.permittedArrowDirections = 0; // Keeps the dialog centered, I still can't find the proper way to get it shows under the share button.
     }
     [presenter presentViewController:alert animated:YES completion:nil];
 }

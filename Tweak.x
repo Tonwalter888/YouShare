@@ -1,5 +1,3 @@
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 #import "../YTVideoOverlay/Header.h"
 #import "../YTVideoOverlay/Init.x"
 #import <YouTubeHeader/YTIIcon.h>

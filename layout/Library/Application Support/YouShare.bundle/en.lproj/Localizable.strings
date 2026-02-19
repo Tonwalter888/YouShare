@@ -3,7 +3,7 @@
 "URL_COPIED" = "Copied video link to clipboard";
 "COPY_URL" = "Copy video link";
 "COPY_URL_TIMESTAMP" = "Copy video link with timestamp";
-"URL_TIMESTAMP_COPIED" = " Copied video link with timestamp to clipboard";
+"URL_TIMESTAMP_COPIED" = "Copied video link with timestamp to clipboard";
 "CANCEL" = "Cancel";
 "ERROR_VIDEOID" = "Cannot get the video ID";
 "ERROR_ADS" = "Cannot copy video link while playing ads";

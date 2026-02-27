@@ -82,17 +82,12 @@ static inline NSString *YSLocalizations(NSString *key) {
     }
 
     // Prepare video link
-    NSString *baseURL =
-        [NSString stringWithFormat:@"https://youtube.com/watch?v=%@", self.currentVideoID];
+    NSString *baseURL = [NSString stringWithFormat:@"https://youtube.com/watch?v=%@", self.currentVideoID];
     NSInteger seconds = (NSInteger)floor(self.currentVideoMediaTime);
-    NSString *timestampURL =
-        [NSString stringWithFormat:@"%@&t=%lds", baseURL, (long)seconds];
+    NSString *timestampURL = [NSString stringWithFormat:@"%@&t=%lds", baseURL, (long)seconds];
 
     // Create UIKit action sheet
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:nil
-                                            message:nil
-                                     preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     // Copy URL
     UIAlertAction *copyURL =
         [UIAlertAction actionWithTitle:YSLocalizations(@"COPY_URL")
@@ -126,12 +121,9 @@ static inline NSString *YSLocalizations(NSString *key) {
     [alert addAction:copyTimestamp];
     [alert addAction:cancel];
 
-    UIViewController *presenter =
-        (UIViewController *)[self activeVideoPlayerOverlay];
-
+    UIViewController *presenter = (UIViewController *)[self activeVideoPlayerOverlay];
     // Prevent the dialog crashes on iPad
-    UIPopoverPresentationController *popover =
-        alert.popoverPresentationController;
+    UIPopoverPresentationController *popover = alert.popoverPresentationController;
     if (popover) {
         popover.sourceView = presenter.view;
         popover.sourceRect = presenter.view.bounds;

@@ -1,0 +1,11 @@
+"ENABLED" = "Tampilkan tombol salin tautan video";
+"POSITION" = "Posisi tombol salin tautan video";
+"URL_COPIED" = "Tautan video disalin ke clipboard";
+"COPY_URL" = "Salin tautan video";
+"COPY_URL_TIMESTAMP" = "Salin tautan video dengan waktu";
+"URL_TIMESTAMP_COPIED" = "Tautan video dengan waktu disalin ke clipboard";
+"CANCEL" = "Batal";
+"ERROR_VIDEOID" = "Tidak dapat mengambil ID video";
+"ERROR_ADS" = "Tidak dapat menyalin tautan video saat iklan diputar";
+"YouShareHoldToCopy_KEY" = "Gunakan tombol tekan & tahan untuk menyalin";
+"YouShareHoldToCopy_KEY_DESC" = "Tekan tombol untuk menyalin tautan video, tahan untuk menyalin tautan dengan waktu";

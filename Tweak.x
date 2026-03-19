@@ -1,4 +1,4 @@
-// Hold to copy original codes - Sohday67 https://github.com/Sohday67/YouTimeStamp/blob/main/Tweak.x
+// Hold to copy button original codes - Sohday67 https://github.com/Sohday67/YouTimeStamp/blob/main/Tweak.x
 #import "../YTVideoOverlay/Header.h"
 #import "../YTVideoOverlay/Init.x"
 #import <YouTubeHeader/YTIIcon.h>
@@ -157,7 +157,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
     }
 }
 
-// Create a link using only the video ID (no timestamp)
+// Create a link with timestamp for long press
 %new
 - (void)didLongPressYouShare {
     if (!self.currentVideoID) {

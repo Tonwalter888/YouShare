@@ -1,4 +1,4 @@
-// Hold to copy button original codes - Sohday67 https://github.com/Sohday67/YouTimeStamp/blob/main/Tweak.x
+// Hold to copy button original codes - Sohday67 https://github.com/Sohday67/YouTimeStamp/blob/eafb1f583500e8d5ab84b25487e5f3d55cba5d65/Tweak.x
 #import "../YTVideoOverlay/Header.h"
 #import "../YTVideoOverlay/Init.x"
 #import <YouTubeHeader/YTIIcon.h>

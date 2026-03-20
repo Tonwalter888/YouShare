@@ -84,14 +84,14 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 - (void)didPressYouShare {
     if (!self.currentVideoID) {
         YTAlertView *alertView = [%c(YTAlertView) infoDialog];
-        alertView.title = LOC(@"ERROR");
-        alertView.subtitle = LOC(@"ERROR_VIDEOID");
+        alertView.title = YSLocalizations(@"ERROR");
+        alertView.subtitle = YSLocalizations(@"ERROR_VIDEOID");
         [alertView show];
         return;
     } else if (self.isPlayingAd) {
         YTAlertView *alertView = [%c(YTAlertView) infoDialog];
-        alertView.title = LOC(@"ERROR");
-        alertView.subtitle = LOC(@"ERROR_ADS");
+        alertView.title = YSLocalizations(@"ERROR");
+        alertView.subtitle = YSLocalizations(@"ERROR_ADS");
         [alertView show];
         return;
     }
@@ -163,14 +163,14 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 - (void)didLongPressYouShare {
     if (!self.currentVideoID) {
         YTAlertView *alertView = [%c(YTAlertView) infoDialog];
-        alertView.title = LOC(@"ERROR");
-        alertView.subtitle = LOC(@"ERROR_VIDEOID");
+        alertView.title = YSLocalizations(@"ERROR");
+        alertView.subtitle = YSLocalizations(@"ERROR_VIDEOID");
         [alertView show];
         return;
     } else if (self.isPlayingAd) {
         YTAlertView *alertView = [%c(YTAlertView) infoDialog];
-        alertView.title = LOC(@"ERROR");
-        alertView.subtitle = LOC(@"ERROR_ADS");
+        alertView.title = YSLocalizations(@"ERROR");
+        alertView.subtitle = YSLocalizations(@"ERROR_ADS");
         [alertView show];
         return;
     }

@@ -5,6 +5,7 @@
 "COPY_URL_TIMESTAMP" = "Copy video link with timestamp";
 "URL_TIMESTAMP_COPIED" = "Copied video link with timestamp to clipboard";
 "CANCEL" = "Cancel";
+"ERROR" = "Error";
 "ERROR_VIDEOID" = "Cannot get the video ID";
 "ERROR_ADS" = "Cannot copy video link while playing ads";
 "YouShareHoldToCopy_KEY" = "Use copy and hold button";

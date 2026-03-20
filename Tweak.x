@@ -9,6 +9,7 @@
 #import <YouTubeHeader/YTPlayerViewController.h>
 #import <YouTubeHeader/GOOHUDManagerInternal.h>
 #import <YouTubeHeader/YTInlinePlayerBarContainerView.h>
+#import <YouTubeHeader/YTAlertView.h>
 
 #define TweakKey @"YouShare"
 #define HoldToCopyKey @"YouShareHoldToCopy"
@@ -82,16 +83,16 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 %new
 - (void)didPressYouShare {
     if (!self.currentVideoID) {
-        [[%c(GOOHUDManagerInternal) sharedInstance]
-            showMessageMainThread:
-                [%c(YTHUDMessage)
-                    messageWithText:YSLocalizations(@"ERROR_VIDEOID")]];
+        YTAlertView *alertView = [%c(YTAlertView) infoDialog];
+        alertView.title = LOC(@"ERROR");
+        alertView.subtitle = LOC(@"ERROR_VIDEOID");
+        [alertView show];
         return;
     } else if (self.isPlayingAd) {
-        [[%c(GOOHUDManagerInternal) sharedInstance]
-            showMessageMainThread:
-                [%c(YTHUDMessage)
-                    messageWithText:YSLocalizations(@"ERROR_ADS")]];
+        YTAlertView *alertView = [%c(YTAlertView) infoDialog];
+        alertView.title = LOC(@"ERROR");
+        alertView.subtitle = LOC(@"ERROR_ADS");
+        [alertView show];
         return;
     }
 
@@ -161,16 +162,16 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 %new
 - (void)didLongPressYouShare {
     if (!self.currentVideoID) {
-        [[%c(GOOHUDManagerInternal) sharedInstance]
-            showMessageMainThread:
-                [%c(YTHUDMessage)
-                    messageWithText:YSLocalizations(@"ERROR_VIDEOID")]];
+        YTAlertView *alertView = [%c(YTAlertView) infoDialog];
+        alertView.title = LOC(@"ERROR");
+        alertView.subtitle = LOC(@"ERROR_VIDEOID");
+        [alertView show];
         return;
     } else if (self.isPlayingAd) {
-        [[%c(GOOHUDManagerInternal) sharedInstance]
-            showMessageMainThread:
-                [%c(YTHUDMessage)
-                    messageWithText:YSLocalizations(@"ERROR_ADS")]];
+        YTAlertView *alertView = [%c(YTAlertView) infoDialog];
+        alertView.title = LOC(@"ERROR");
+        alertView.subtitle = LOC(@"ERROR_ADS");
+        [alertView show];
         return;
     }
 

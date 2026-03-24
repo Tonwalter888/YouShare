@@ -9,4 +9,4 @@
 "ERROR_VIDEOID" = "Tidak dapat mengambil ID video";
 "ERROR_ADS" = "Tidak dapat menyalin tautan video saat iklan diputar";
 "YouShareHoldToCopy_KEY" = "Gunakan tombol tekan & tahan untuk menyalin";
-"YouShareHoldToCopy_KEY_DESC" = "Tekan tombol untuk menyalin tautan video, tahan untuk menyalin tautan dengan waktu";
+"YouShareHoldToCopy_KEY_DESC" = "Ubah tombol untuk menyalin tautan video jika ditekan, dan tekan serta tahan tombol untuk menyalin tautan video dengan stempel waktu. Diperlukan restart aplikasi.";

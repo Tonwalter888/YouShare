@@ -9,4 +9,4 @@
 "ERROR_VIDEOID" = "Cannot get the video ID";
 "ERROR_ADS" = "Cannot copy video link while playing ads";
 "YouShareHoldToCopy_KEY" = "Use copy and hold button";
-"YouShareHoldToCopy_KEY_DESC" = "Change the button to copy video link if pressed and hold the button to copy video link with timestamp";
+"YouShareHoldToCopy_KEY_DESC" = "Change the button to copy video link if pressed and hold the button to copy video link with timestamp. An app restaat is requried.";

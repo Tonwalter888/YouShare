@@ -72,7 +72,7 @@ static inline NSString *YSLocalizations(NSString *key) {
 static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL selector) {
     if (button && [[NSUserDefaults standardUserDefaults] boolForKey:HoldToCopyKey]) {
         UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:target action:selector];
-        longPress.minimumPressDuration = 0.45;
+        longPress.minimumPressDuration = 0.4;
         [button addGestureRecognizer:longPress];
     }
 }

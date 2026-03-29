@@ -225,9 +225,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
     YTMainAppVideoPlayerOverlayView *mainOverlayView = (YTMainAppVideoPlayerOverlayView *)self.superview;
     YTMainAppVideoPlayerOverlayViewController *mainOverlayController = (YTMainAppVideoPlayerOverlayViewController *)mainOverlayView.delegate;
     YTPlayerViewController *playerViewController = mainOverlayController.parentViewController;
-    if (playerViewController) {
-        [playerViewController didPressYouShare];
-    }
+    if (playerViewController) [playerViewController didPressYouShare];
 }
 
 // Custom method to handle long press on the share button
@@ -237,9 +235,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
         YTMainAppVideoPlayerOverlayView *mainOverlayView = (YTMainAppVideoPlayerOverlayView *)self.superview;
         YTMainAppVideoPlayerOverlayViewController *mainOverlayController = (YTMainAppVideoPlayerOverlayViewController *)mainOverlayView.delegate;
         YTPlayerViewController *playerViewController = mainOverlayController.parentViewController;
-        if (playerViewController) {
-            [playerViewController didLongPressYouShare];
-        }
+        if (playerViewController) [playerViewController didLongPressYouShare];
     }
 }
 
@@ -270,9 +266,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
     YTInlinePlayerBarController *delegate = self.delegate;
     YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"];
     YTPlayerViewController *parentViewController = _delegate.parentViewController;
-    if (parentViewController) {
-        [parentViewController didPressYouShare];
-    }
+    if (parentViewController) [parentViewController didPressYouShare];
 }
 
 // Custom method to handle long press on the share button
@@ -282,9 +276,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
         YTInlinePlayerBarController *delegate = self.delegate;
         YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"];
         YTPlayerViewController *parentViewController = _delegate.parentViewController;
-        if (parentViewController) {
-            [parentViewController didLongPressYouShare];
-        }
+        if (parentViewController) [parentViewController didLongPressYouShare];
     }
 }
 

@@ -69,8 +69,12 @@ static inline NSString *YSLocalizations(NSString *key) {
     return [YouShareBundle() localizedStringForKey:key value:nil table:nil];
 }
 
+static BOOL HoldToCopyKeyEnabled() {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:HoldToCopyKey];
+}
+
 static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL selector) {
-    if (button && [[NSUserDefaults standardUserDefaults] boolForKey:HoldToCopyKey]) {
+    if (button && HoldToCopyKeyEnabled()) {
         UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:target action:selector];
         longPress.minimumPressDuration = 0.4;
         [button addGestureRecognizer:longPress];
@@ -101,8 +105,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
     NSInteger seconds = (NSInteger)floor(self.currentVideoMediaTime);
     NSString *timestampURL = [NSString stringWithFormat:@"%@&t=%lds", videoURL, (long)seconds];
 
-    BOOL HoldToCopyKeyEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:HoldToCopyKey];
-    if (HoldToCopyKeyEnabled) {
+    if (HoldToCopyKeyEnabled()) {
         // Copy the link to clipboard
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         [pasteboard setString:videoURL];

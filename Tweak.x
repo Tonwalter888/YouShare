@@ -203,7 +203,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 
 - (id)initWithDelegate:(id)delegate {
     self = %orig;
-    if (self) {
+    if (self && HoldToCopyKeyEnabled()) {
         addLongPressGestureToTheButton(self.overlayButtons[TweakKey], self, @selector(didLongPressYouShare:));
     }
     return self;
@@ -211,7 +211,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 
 - (id)initWithDelegate:(id)delegate autoplaySwitchEnabled:(BOOL)autoplaySwitchEnabled {
     self = %orig;
-    if (self) {
+    if (self && HoldToCopyKeyEnabled()) {
         addLongPressGestureToTheButton(self.overlayButtons[TweakKey], self, @selector(didLongPressYouShare:));
     }
     return self;
@@ -252,7 +252,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 
 - (id)init {
     self = %orig;
-    if (self) {
+    if (self && HoldToCopyKeyEnabled()) {
         addLongPressGestureToTheButton(self.overlayButtons[TweakKey], self, @selector(didLongPressYouShare:));
     }
     return self;

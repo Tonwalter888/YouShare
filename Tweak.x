@@ -164,30 +164,32 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 // Create a link with timestamp for long press
 %new
 - (void)didLongPressYouShare {
-    if (!self.currentVideoID) {
-        YTAlertView *alertView = [%c(YTAlertView) infoDialog];
-        alertView.title = YSLocalizations(@"ERROR");
-        alertView.subtitle = YSLocalizations(@"ERROR_VIDEOID");
-        [alertView show];
-        return;
-    } else if (self.isPlayingAd) {
-        YTAlertView *alertView = [%c(YTAlertView) infoDialog];
-        alertView.title = YSLocalizations(@"ERROR");
-        alertView.subtitle = YSLocalizations(@"ERROR_ADS");
-        [alertView show];
-        return;
-    }
+    if (HoldToCopyKeyEnabled()) {
+        if (!self.currentVideoID) {
+            YTAlertView *alertView = [%c(YTAlertView) infoDialog];
+            alertView.title = YSLocalizations(@"ERROR");
+            alertView.subtitle = YSLocalizations(@"ERROR_VIDEOID");
+            [alertView show];
+            return;
+        } else if (self.isPlayingAd) {
+            YTAlertView *alertView = [%c(YTAlertView) infoDialog];
+            alertView.title = YSLocalizations(@"ERROR");
+            alertView.subtitle = YSLocalizations(@"ERROR_ADS");
+            [alertView show];
+            return;
+        }
 
-    NSString *videoURL = [NSString stringWithFormat:@"https://youtu.be/%@", self.currentVideoID];
-    NSInteger seconds = (NSInteger)floor(self.currentVideoMediaTime);
-    NSString *timestampURL = [NSString stringWithFormat:@"%@&t=%lds", videoURL, (long)seconds];
-    // Copy the link to clipboard
-    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [pasteboard setString:timestampURL];
-    // Show snackbar
-    [[%c(GOOHUDManagerInternal) sharedInstance] 
-        showMessageMainThread:
-            [%c(YTHUDMessage) messageWithText:YSLocalizations(@"URL_TIMESTAMP_COPIED")]];
+        NSString *videoURL = [NSString stringWithFormat:@"https://youtu.be/%@", self.currentVideoID];
+        NSInteger seconds = (NSInteger)floor(self.currentVideoMediaTime);
+        NSString *timestampURL = [NSString stringWithFormat:@"%@&t=%lds", videoURL, (long)seconds];
+        // Copy the link to clipboard
+        UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+        [pasteboard setString:timestampURL];
+        // Show snackbar
+        [[%c(GOOHUDManagerInternal) sharedInstance] 
+            showMessageMainThread:
+                [%c(YTHUDMessage) messageWithText:YSLocalizations(@"URL_TIMESTAMP_COPIED")]];
+    }
 }
 
 %end

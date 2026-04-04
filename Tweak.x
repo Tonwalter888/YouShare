@@ -53,6 +53,8 @@ NSBundle *YouShareBundle() {
     return bundle;
 }
 
+static NSBundle *tweakBundle = nil;
+
 static UIImage *shareIcon(NSString *qualityLabel) {
     YTIIcon *icon = [%c(YTIIcon) new];
     icon.iconType = YT_SHARE;
@@ -63,10 +65,6 @@ static UIImage *shareIcon(NSString *qualityLabel) {
         return [icon iconImageWithSelected:NO];
     }
     return nil;
-}
-
-static inline NSString *YSLocalizations(NSString *key) {
-    return [YouShareBundle() localizedStringForKey:key value:nil table:nil];
 }
 
 static BOOL HoldToCopyKeyEnabled() {
@@ -88,14 +86,14 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 - (void)didPressYouShare {
     if (!self.currentVideoID) {
         YTAlertView *alertView = [%c(YTAlertView) infoDialog];
-        alertView.title = YSLocalizations(@"ERROR");
-        alertView.subtitle = YSLocalizations(@"ERROR_VIDEOID");
+        alertView.title = LOC(@"ERROR");
+        alertView.subtitle = LOC(@"ERROR_VIDEOID");
         [alertView show];
         return;
     } else if (self.isPlayingAd) {
         YTAlertView *alertView = [%c(YTAlertView) infoDialog];
-        alertView.title = YSLocalizations(@"ERROR");
-        alertView.subtitle = YSLocalizations(@"ERROR_ADS");
+        alertView.title = LOC(@"ERROR");
+        alertView.subtitle = LOC(@"ERROR_ADS");
         [alertView show];
         return;
     }
@@ -112,37 +110,37 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
         // Show snackbar
         [[%c(GOOHUDManagerInternal) sharedInstance] 
             showMessageMainThread:
-                [%c(YTHUDMessage) messageWithText:YSLocalizations(@"URL_COPIED")]];
+                [%c(YTHUDMessage) messageWithText:LOC(@"URL_COPIED")]];
     } else {
         // Create UIKit action sheet
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         // Copy URL
         UIAlertAction *copyURL =
-            [UIAlertAction actionWithTitle:YSLocalizations(@"COPY_URL")
+            [UIAlertAction actionWithTitle:LOC(@"COPY_URL")
                                      style:UIAlertActionStyleDefault
                                    handler:^(UIAlertAction *a) {
             UIPasteboard.generalPasteboard.string = videoURL;
             [[%c(GOOHUDManagerInternal) sharedInstance]
                 showMessageMainThread:
                     [%c(YTHUDMessage)
-                        messageWithText:YSLocalizations(@"URL_COPIED")]];
+                        messageWithText:LOC(@"URL_COPIED")]];
         }];
 
         // Copy URL with timestamp
         UIAlertAction *copyTimestamp =
-            [UIAlertAction actionWithTitle:YSLocalizations(@"COPY_URL_TIMESTAMP")
+            [UIAlertAction actionWithTitle:LOC(@"COPY_URL_TIMESTAMP")
                                      style:UIAlertActionStyleDefault
                                    handler:^(UIAlertAction *a) {
             UIPasteboard.generalPasteboard.string = timestampURL;
             [[%c(GOOHUDManagerInternal) sharedInstance]
                 showMessageMainThread:
                     [%c(YTHUDMessage)
-                        messageWithText:YSLocalizations(@"URL_TIMESTAMP_COPIED")]];
+                        messageWithText:LOC(@"URL_TIMESTAMP_COPIED")]];
         }];
 
         // Cancel
         UIAlertAction *cancel =
-            [UIAlertAction actionWithTitle:YSLocalizations(@"CANCEL")
+            [UIAlertAction actionWithTitle:LOC(@"CANCEL")
                                      style:UIAlertActionStyleCancel
                                    handler:nil];
         [alert addAction:copyURL];
@@ -167,14 +165,14 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
     if (HoldToCopyKeyEnabled()) {
         if (!self.currentVideoID) {
             YTAlertView *alertView = [%c(YTAlertView) infoDialog];
-            alertView.title = YSLocalizations(@"ERROR");
-            alertView.subtitle = YSLocalizations(@"ERROR_VIDEOID");
+            alertView.title = LOC(@"ERROR");
+            alertView.subtitle = LOC(@"ERROR_VIDEOID");
             [alertView show];
             return;
         } else if (self.isPlayingAd) {
             YTAlertView *alertView = [%c(YTAlertView) infoDialog];
-            alertView.title = YSLocalizations(@"ERROR");
-            alertView.subtitle = YSLocalizations(@"ERROR_ADS");
+            alertView.title = LOC(@"ERROR");
+            alertView.subtitle = LOC(@"ERROR_ADS");
             [alertView show];
             return;
         }
@@ -188,7 +186,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
         // Show snackbar
         [[%c(GOOHUDManagerInternal) sharedInstance] 
             showMessageMainThread:
-                [%c(YTHUDMessage) messageWithText:YSLocalizations(@"URL_TIMESTAMP_COPIED")]];
+                [%c(YTHUDMessage) messageWithText:LOC(@"URL_TIMESTAMP_COPIED")]];
     }
 }
 
@@ -227,7 +225,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
     YTMainAppVideoPlayerOverlayView *mainOverlayView = (YTMainAppVideoPlayerOverlayView *)self.superview;
     YTMainAppVideoPlayerOverlayViewController *mainOverlayController = (YTMainAppVideoPlayerOverlayViewController *)mainOverlayView.delegate;
     YTPlayerViewController *playerViewController = mainOverlayController.parentViewController;
-    if (playerViewController) [playerViewController didPressYouShare];
+    [playerViewController didPressYouShare];
 }
 
 // Custom method to handle long press on the share button
@@ -237,7 +235,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
         YTMainAppVideoPlayerOverlayView *mainOverlayView = (YTMainAppVideoPlayerOverlayView *)self.superview;
         YTMainAppVideoPlayerOverlayViewController *mainOverlayController = (YTMainAppVideoPlayerOverlayViewController *)mainOverlayView.delegate;
         YTPlayerViewController *playerViewController = mainOverlayController.parentViewController;
-        if (playerViewController) [playerViewController didLongPressYouShare];
+        [playerViewController didLongPressYouShare];
     }
 }
 
@@ -268,7 +266,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
     YTInlinePlayerBarController *delegate = self.delegate;
     YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"];
     YTPlayerViewController *parentViewController = _delegate.parentViewController;
-    if (parentViewController) [parentViewController didPressYouShare];
+    [parentViewController didPressYouShare];
 }
 
 // Custom method to handle long press on the share button
@@ -278,7 +276,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
         YTInlinePlayerBarController *delegate = self.delegate;
         YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"];
         YTPlayerViewController *parentViewController = _delegate.parentViewController;
-        if (parentViewController) [parentViewController didLongPressYouShare];
+        [parentViewController didLongPressYouShare];
     }
 }
 
@@ -286,6 +284,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 %end
 
 %ctor {
+    tweakBundle = YouShareBundle();
     initYTVideoOverlay(TweakKey, @{
         AccessibilityLabelKey: @"YouShare",
         SelectorKey: @"didPressYouShare:",

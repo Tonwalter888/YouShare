@@ -55,7 +55,7 @@ NSBundle *YouShareBundle() {
 
 static NSBundle *tweakBundle = nil;
 
-static UIImage *shareIcon(NSString *qualityLabel) {
+static UIImage *shareIcon(NSString *unused) {
     YTIIcon *icon = [%c(YTIIcon) new];
     icon.iconType = YT_SHARE;
     if ([icon respondsToSelector:@selector(iconImageWithColor:)]) {
@@ -200,14 +200,6 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 %hook YTMainAppControlsOverlayView
 
 - (id)initWithDelegate:(id)delegate {
-    self = %orig;
-    if (self) {
-        addLongPressGestureToTheButton(self.overlayButtons[TweakKey], self, @selector(didLongPressYouShare:));
-    }
-    return self;
-}
-
-- (id)initWithDelegate:(id)delegate autoplaySwitchEnabled:(BOOL)autoplaySwitchEnabled {
     self = %orig;
     if (self) {
         addLongPressGestureToTheButton(self.overlayButtons[TweakKey], self, @selector(didLongPressYouShare:));

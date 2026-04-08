@@ -55,7 +55,7 @@ NSBundle *YouShareBundle() {
 
 static NSBundle *tweakBundle = nil;
 
-static UIImage *shareIcon(NSString *unused) {
+static UIImage *shareIcon() {
     YTIIcon *icon = [%c(YTIIcon) new];
     icon.iconType = YT_SHARE;
     if ([icon respondsToSelector:@selector(iconImageWithColor:)]) {
@@ -208,7 +208,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 }
 
 - (UIImage *)buttonImage:(NSString *)tweakId {
-    return [tweakId isEqualToString:TweakKey] ? shareIcon(@"3") : %orig;
+    return [tweakId isEqualToString:TweakKey] ? shareIcon() : %orig;
 }
 
 // Custom method to handle the share button press
@@ -249,7 +249,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 }
 
 - (UIImage *)buttonImage:(NSString *)tweakId {
-    return [tweakId isEqualToString:TweakKey] ? shareIcon(@"3") : %orig;
+    return [tweakId isEqualToString:TweakKey] ? shareIcon() : %orig;
 }
 
 // Custom method to handle the share button press

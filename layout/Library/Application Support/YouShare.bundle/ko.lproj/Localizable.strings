@@ -1,0 +1,12 @@
+"ENABLED" = "동영상 링크 복사 버튼 표시";
+"POSITION" = "복사 버튼 위치";
+"URL_COPIED" = "동영상 링크가 클립보드에 복사되었습니다";
+"COPY_URL" = "동영상 링크 복사";
+"COPY_URL_TIMESTAMP" = "현재 시간 포함하여 복사";
+"URL_TIMESTAMP_COPIED" = "현재 시간이 포함된 링크가 복사되었습니다";
+"CANCEL" = "취소";
+"ERROR" = "오류";
+"ERROR_VIDEOID" = "동영상 ID를 가져올 수 없습니다";
+"ERROR_ADS" = "광고 재생 중에는 링크를 복사할 수 없습니다";
+"YouShareHoldToCopy_KEY" = "길게 눌러 시간 포함 복사";
+"YouShareHoldToCopy_KEY_DESC" = "버튼을 누르면 링크를 복사하고, 길게 누르면 현재 시간이 포함된 링크를 복사합니다.";

@@ -1,0 +1,12 @@
+"ENABLED" = "動画リンクをコピーボタンを表示";
+"POSITION" = "コピーボタンの位置";
+"URL_COPIED" = "動画リンクをクリップボードにコピーしました";
+"COPY_URL" = "動画リンクをコピー";
+"COPY_URL_TIMESTAMP" = "タイムスタンプ付きでコピー";
+"URL_TIMESTAMP_COPIED" = "タイムスタンプ付きリンクをコピーしました";
+"CANCEL" = "キャンセル";
+"ERROR" = "エラー";
+"ERROR_VIDEOID" = "ビデオIDを取得できません";
+"ERROR_ADS" = "広告再生中はリンクをコピーできません";
+"YouShareHoldToCopy_KEY" = "長押しでタイムスタンプコピー";
+"YouShareHoldToCopy_KEY_DESC" = "ボタンを押すとリンクをコピーし、長押しするとタイムスタンプ付きでコピーします。";

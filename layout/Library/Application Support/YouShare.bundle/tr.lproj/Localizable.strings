@@ -1,0 +1,12 @@
+"ENABLED" = "Video bağlantısını kopyala düğmesini göster";
+"POSITION" = "Kopyala düğmesi konumu";
+"URL_COPIED" = "Video bağlantısı panoya kopyalandı";
+"COPY_URL" = "Video bağlantısını kopyala";
+"COPY_URL_TIMESTAMP" = "Zaman damgalı kopyala";
+"URL_TIMESTAMP_COPIED" = "Zaman damgalı bağlantı kopyalandı";
+"CANCEL" = "İptal";
+"ERROR" = "Hata";
+"ERROR_VIDEOID" = "Video kimliği alınamadı";
+"ERROR_ADS" = "Reklam oynatılırken bağlantı kopyalanamaz";
+"YouShareHoldToCopy_KEY" = "Kopyala ve basılı tut düğmesini kullan";
+"YouShareHoldToCopy_KEY_DESC" = "Düğmeye basıldığında bağlantıyı kopyalar, basılı tutulduğunda zaman damgalı kopyalar.";

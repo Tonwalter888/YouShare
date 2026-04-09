@@ -1,0 +1,12 @@
+"ENABLED" = "Zobrazit tlačítko kopírovat odkaz";
+"POSITION" = "Poloha tlačítka kopírovat odkaz";
+"URL_COPIED" = "Odkaz na video zkopírován do schránky";
+"COPY_URL" = "Kopírovat odkaz na video";
+"COPY_URL_TIMESTAMP" = "Kopírovat odkaz na video s časovou značkou";
+"URL_TIMESTAMP_COPIED" = "Odkaz na video s časovou značkou zkopírován do schránky";
+"CANCEL" = "Zrušit";
+"ERROR" = "Chyba";
+"ERROR_VIDEOID" = "Nelze získat ID videa";
+"ERROR_ADS" = "Během přehrávání reklam nelze kopírovat odkaz";
+"YouShareHoldToCopy_KEY" = "Použít tlačítko kopírovat a podržet";
+"YouShareHoldToCopy_KEY_DESC" = "Změní tlačítko tak, aby stisknutím zkopírovalo odkaz a podržením zkopírovalo odkaz s časovou značkou.";

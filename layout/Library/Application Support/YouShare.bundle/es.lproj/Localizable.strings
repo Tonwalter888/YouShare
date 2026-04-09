@@ -1,0 +1,12 @@
+"ENABLED" = "Mostrar botón copiar enlace de video";
+"POSITION" = "Posición del botón copiar enlace";
+"URL_COPIED" = "Enlace de video copiado al portapapeles";
+"COPY_URL" = "Copiar enlace de video";
+"COPY_URL_TIMESTAMP" = "Copiar enlace con marca de tiempo";
+"URL_TIMESTAMP_COPIED" = "Enlace con marca de tiempo copiado al portapapeles";
+"CANCEL" = "Cancelar";
+"ERROR" = "Error";
+"ERROR_VIDEOID" = "No se puede obtener el ID del video";
+"ERROR_ADS" = "No se puede copiar el enlace mientras hay anuncios";
+"YouShareHoldToCopy_KEY" = "Usar botón de copiar y mantener";
+"YouShareHoldToCopy_KEY_DESC" = "Cambia el botón para copiar el enlace al presionar y mantener presionado para copiar con marca de tiempo.";

@@ -1,0 +1,12 @@
+"ENABLED" = "Hiện nút sao chép liên kết";
+"POSITION" = "Vị trí nút sao chép";
+"URL_COPIED" = "Đã sao chép liên kết vào bộ nhớ tạm";
+"COPY_URL" = "Sao chép liên kết video";
+"COPY_URL_TIMESTAMP" = "Sao chép kèm mốc thời gian";
+"URL_TIMESTAMP_COPIED" = "Đã sao chép liên kết kèm mốc thời gian";
+"CANCEL" = "Hủy";
+"ERROR" = "Lỗi";
+"ERROR_VIDEOID" = "Không thể lấy ID video";
+"ERROR_ADS" = "Không thể sao chép liên kết khi đang xem quảng cáo";
+"YouShareHoldToCopy_KEY" = "Nhấn và giữ để sao chép";
+"YouShareHoldToCopy_KEY_DESC" = "Nhấn để sao chép liên kết, nhấn và giữ để sao chép kèm mốc thời gian.";

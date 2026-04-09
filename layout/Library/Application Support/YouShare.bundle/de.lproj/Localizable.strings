@@ -1,0 +1,12 @@
+"ENABLED" = "Schaltfläche „Videolink kopieren“ anzeigen";
+"POSITION" = "Position der Schaltfläche „Videolink kopieren“";
+"URL_COPIED" = "Videolink in die Zwischenablage kopiert";
+"COPY_URL" = "Videolink kopieren";
+"COPY_URL_TIMESTAMP" = "Videolink mit Zeitstempel kopieren";
+"URL_TIMESTAMP_COPIED" = "Videolink mit Zeitstempel in die Zwischenablage kopiert";
+"CANCEL" = "Abbrechen";
+"ERROR" = "Fehler";
+"ERROR_VIDEOID" = "Video-ID kann nicht abgerufen werden";
+"ERROR_ADS" = "Videolink kann während der Werbewiedergabe nicht kopiert werden";
+"YouShareHoldToCopy_KEY" = "Kopieren- und Halten-Schaltfläche verwenden";
+"YouShareHoldToCopy_KEY_DESC" = "Ändert die Schaltfläche so, dass beim Drücken der Videolink und beim Gedrückthalten der Videolink mit Zeitstempel kopiert wird.";

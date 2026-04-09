@@ -1,0 +1,12 @@
+"ENABLED" = "Pokaż przycisk kopiowania linku";
+"POSITION" = "Pozycja przycisku kopiowania";
+"URL_COPIED" = "Link skopiowany do schowka";
+"COPY_URL" = "Kopiuj link do wideo";
+"COPY_URL_TIMESTAMP" = "Kopiuj link z sygnaturą czasową";
+"URL_TIMESTAMP_COPIED" = "Link z sygnaturą czasową skopiowany";
+"CANCEL" = "Anuluj";
+"ERROR" = "Błąd";
+"ERROR_VIDEOID" = "Nie można pobrać ID wideo";
+"ERROR_ADS" = "Nie można kopiować linku podczas reklam";
+"YouShareHoldToCopy_KEY" = "Użyj kopiowania przez przytrzymanie";
+"YouShareHoldToCopy_KEY_DESC" = "Naciśnij, aby skopiować link; przytrzymaj, aby skopiować z sygnaturą czasową.";

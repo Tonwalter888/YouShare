@@ -1,0 +1,12 @@
+"ENABLED" = "顯示複製影片連結按鈕";
+"POSITION" = "複製按鈕位置";
+"URL_COPIED" = "影片連結已複製到剪貼簿";
+"COPY_URL" = "複製影片連結";
+"COPY_URL_TIMESTAMP" = "複製帶時間戳記連結";
+"URL_TIMESTAMP_COPIED" = "帶時間戳記連結已複製";
+"CANCEL" = "取消";
+"ERROR" = "錯誤";
+"ERROR_VIDEOID" = "無法取得影片 ID";
+"ERROR_ADS" = "播放廣告時無法複製連結";
+"YouShareHoldToCopy_KEY" = "使用點擊與長按複製";
+"YouShareHoldToCopy_KEY_DESC" = "點擊按鈕複製連結，長按按鈕複製帶時間戳記的連結。";

@@ -1,0 +1,12 @@
+"ENABLED" = "Mostra pulsante copia link video";
+"POSITION" = "Posizione pulsante copia link";
+"URL_COPIED" = "Link video copiato negli appunti";
+"COPY_URL" = "Copia link video";
+"COPY_URL_TIMESTAMP" = "Copia link video con timestamp";
+"URL_TIMESTAMP_COPIED" = "Link video con timestamp copiato negli appunti";
+"CANCEL" = "Annulla";
+"ERROR" = "Errore";
+"ERROR_VIDEOID" = "Impossibile ottenere l'ID del video";
+"ERROR_ADS" = "Impossibile copiare il link durante gli annunci";
+"YouShareHoldToCopy_KEY" = "Usa pulsante copia e tieni premuto";
+"YouShareHoldToCopy_KEY_DESC" = "Cambia il pulsante per copiare il link con la pressione e per copiare con timestamp tenendo premuto.";

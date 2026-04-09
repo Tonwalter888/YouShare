@@ -207,6 +207,14 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
     return self;
 }
 
+- (id)initWithDelegate:(id)delegate autoplaySwitchEnabled:(BOOL)autoplaySwitchEnabled {
+    self = %orig;
+    if (self) {
+        addLongPressGestureToTheButton(self.overlayButtons[TweakKey], self, @selector(didLongPressYouShare:));
+    }
+    return self;
+}
+
 - (UIImage *)buttonImage:(NSString *)tweakId {
     return [tweakId isEqualToString:TweakKey] ? shareIcon() : %orig;
 }

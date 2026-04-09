@@ -1,0 +1,12 @@
+"ENABLED" = "Vis knappen kopier videolink";
+"POSITION" = "Position for kopier videolink-knap";
+"URL_COPIED" = "Videolink kopieret til udklipsholder";
+"COPY_URL" = "Kopier videolink";
+"COPY_URL_TIMESTAMP" = "Kopier videolink med tidsstempel";
+"URL_TIMESTAMP_COPIED" = "Videolink med tidsstempel kopieret til udklipsholder";
+"CANCEL" = "Annuller";
+"ERROR" = "Fejl";
+"ERROR_VIDEOID" = "Kan ikke hente video-id";
+"ERROR_ADS" = "Kan ikke kopiere videolink, mens der afspilles reklamer";
+"YouShareHoldToCopy_KEY" = "Brug kopier og hold-knappen";
+"YouShareHoldToCopy_KEY_DESC" = "Skift knappen til at kopiere videolink ved tryk, og hold knappen nede for at kopiere med tidsstempel.";

@@ -1,0 +1,12 @@
+"ENABLED" = "Näytä kopioi videolinkki -painike";
+"POSITION" = "Kopioi videolinkki -painikkeen sijainti";
+"URL_COPIED" = "Videon linkki kopioitu leikepöydälle";
+"COPY_URL" = "Kopioi videon linkki";
+"COPY_URL_TIMESTAMP" = "Kopioi videon linkki aikaleimalla";
+"URL_TIMESTAMP_COPIED" = "Videon linkki aikaleimalla kopioitu leikepöydälle";
+"CANCEL" = "Peruuta";
+"ERROR" = "Virhe";
+"ERROR_VIDEOID" = "Videon tunnusta ei voitu noutaa";
+"ERROR_ADS" = "Videon linkkiä ei voi kopioida mainosten aikana";
+"YouShareHoldToCopy_KEY" = "Käytä kopioi ja pidä -painiketta";
+"YouShareHoldToCopy_KEY_DESC" = "Muuta painiketta siten, että painamalla kopioit linkin ja pitämällä painettuna kopioit linkin aikaleimalla.";

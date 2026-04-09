@@ -1,0 +1,12 @@
+"ENABLED" = "Afișează butonul de copiere link video";
+"POSITION" = "Poziția butonului de copiere link video";
+"URL_COPIED" = "Link video copiat în clipboard";
+"COPY_URL" = "Copiază link-ul video";
+"COPY_URL_TIMESTAMP" = "Copiază link-ul video cu timestamp";
+"URL_TIMESTAMP_COPIED" = "Link video cu timestamp copiat în clipboard";
+"CANCEL" = "Anulează";
+"ERROR" = "Eroare";
+"ERROR_VIDEOID" = "Nu se poate obține ID-ul videoclipului";
+"ERROR_ADS" = "Nu se poate copia link-ul în timpul reclamelor";
+"YouShareHoldToCopy_KEY" = "Folosește butonul de copiere și menținere";
+"YouShareHoldToCopy_KEY_DESC" = "Apasă butonul pentru a copia link-ul video și menține apăsat pentru a-l copia cu timestamp.";

@@ -1,0 +1,12 @@
+"ENABLED" = "Vis knappen kopier videolenke";
+"POSITION" = "Posisjon for kopier videolenke-knapp";
+"URL_COPIED" = "Videolenke kopiert til utklippstavlen";
+"COPY_URL" = "Kopier videolenke";
+"COPY_URL_TIMESTAMP" = "Kopier videolenke med tidsstempel";
+"URL_TIMESTAMP_COPIED" = "Videolenke med tidsstempel kopiert til utklippstavlen";
+"CANCEL" = "Avbryt";
+"ERROR" = "Feil";
+"ERROR_VIDEOID" = "Kan ikke hente video-ID";
+"ERROR_ADS" = "Kan ikke kopiere videolenke mens reklame spilles av";
+"YouShareHoldToCopy_KEY" = "Bruk kopier og hold-knappen";
+"YouShareHoldToCopy_KEY_DESC" = "Endre knappen til å kopiere videolenke ved trykk, og hold inne knappen for å kopiere med tidsstempel.";

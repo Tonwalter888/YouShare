@@ -1,0 +1,12 @@
+"ENABLED" = "Tunjukkan butang salin pautan video";
+"POSITION" = "Kedudukan butang salin pautan video";
+"URL_COPIED" = "Pautan video disalin ke papan klip";
+"COPY_URL" = "Salin pautan video";
+"COPY_URL_TIMESTAMP" = "Salin pautan video dengan cap masa";
+"URL_TIMESTAMP_COPIED" = "Pautan video dengan cap masa disalin ke papan klip";
+"CANCEL" = "Batal";
+"ERROR" = "Ralat";
+"ERROR_VIDEOID" = "Tidak dapat mendapatkan ID video";
+"ERROR_ADS" = "Tidak dapat menyalin pautan video semasa iklan dimainkan";
+"YouShareHoldToCopy_KEY" = "Gunakan butang salin dan tahan";
+"YouShareHoldToCopy_KEY_DESC" = "Tukar butang untuk menyalin pautan video jika ditekan, dan tahan butang untuk menyalin dengan cap masa.";

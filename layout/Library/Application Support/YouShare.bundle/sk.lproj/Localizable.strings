@@ -1,0 +1,12 @@
+"ENABLED" = "Zobraziť tlačidlo kopírovať odkaz na video";
+"POSITION" = "Poloha tlačidla kopírovať odkaz na video";
+"URL_COPIED" = "Odkaz na video skopírovaný do schránky";
+"COPY_URL" = "Kopírovať odkaz na video";
+"COPY_URL_TIMESTAMP" = "Kopírovať odkaz na video s časovou značkou";
+"URL_TIMESTAMP_COPIED" = "Odkaz na video s časovou značkou skopírovaný do schránky";
+"CANCEL" = "Zrušiť";
+"ERROR" = "Chyba";
+"ERROR_VIDEOID" = "Nemožno získať ID videa";
+"ERROR_ADS" = "Počas prehrávania reklám nie je možné kopírovať odkaz";
+"YouShareHoldToCopy_KEY" = "Použiť tlačidlo kopírovať a podržať";
+"YouShareHoldToCopy_KEY_DESC" = "Zmení tlačidlo tak, aby stlačením skopírovalo odkaz a podržaním skopírovalo odkaz s časovou značkou.";

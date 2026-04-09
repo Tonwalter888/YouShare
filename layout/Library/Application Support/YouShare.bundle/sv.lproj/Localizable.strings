@@ -1,0 +1,12 @@
+"ENABLED" = "Visa knappen kopiera videolänk";
+"POSITION" = "Position för kopiera videolänk-knapp";
+"URL_COPIED" = "Videolänk kopierad till urklipp";
+"COPY_URL" = "Kopiera videolänk";
+"COPY_URL_TIMESTAMP" = "Kopiera videolänk med tidsstämpel";
+"URL_TIMESTAMP_COPIED" = "Videolänk med tidsstämpel kopierad till urklipp";
+"CANCEL" = "Avbryt";
+"ERROR" = "Fel";
+"ERROR_VIDEOID" = "Kan inte hämta video-ID";
+"ERROR_ADS" = "Kan inte kopiera videolänk medan reklam spelas av";
+"YouShareHoldToCopy_KEY" = "Använd kopiera och håll-knappen";
+"YouShareHoldToCopy_KEY_DESC" = "Tryck på knappen för att kopiera videolänken, håll inne knappen för att kopiera med tidsstämpel.";

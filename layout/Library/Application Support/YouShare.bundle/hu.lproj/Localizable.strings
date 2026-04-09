@@ -1,0 +1,12 @@
+"ENABLED" = "Videó link másolása gomb megjelenítése";
+"POSITION" = "Másolás gomb pozíciója";
+"URL_COPIED" = "Videó link a vágólapra másolva";
+"COPY_URL" = "Videó link másolása";
+"COPY_URL_TIMESTAMP" = "Videó link másolása időbélyeggel";
+"URL_TIMESTAMP_COPIED" = "Időbélyeges link a vágólapra másolva";
+"CANCEL" = "Mégse";
+"ERROR" = "Hiba";
+"ERROR_VIDEOID" = "A videó azonosítója nem kérhető le";
+"ERROR_ADS" = "Hirdetés alatt a link nem másolható";
+"YouShareHoldToCopy_KEY" = "Másolás nyomva tartással";
+"YouShareHoldToCopy_KEY_DESC" = "Gombnyomásra a linket másolja, nyomva tartásra pedig az időbélyeges linket.";

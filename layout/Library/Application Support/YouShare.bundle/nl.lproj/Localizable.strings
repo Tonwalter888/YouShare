@@ -1,0 +1,12 @@
+"ENABLED" = "Knop voor kopiëren videolink tonen";
+"POSITION" = "Positie van kopieerknop";
+"URL_COPIED" = "Videolink gekopieerd naar klembord";
+"COPY_URL" = "Videolink kopiëren";
+"COPY_URL_TIMESTAMP" = "Videolink met tijdstempel kopiëren";
+"URL_TIMESTAMP_COPIED" = "Videolink met tijdstempel gekopieerd naar klembord";
+"CANCEL" = "Annuleren";
+"ERROR" = "Fout";
+"ERROR_VIDEOID" = "Kan video-ID niet ophalen";
+"ERROR_ADS" = "Kan videolink niet kopiëren tijdens advertenties";
+"YouShareHoldToCopy_KEY" = "Kopieer- en vasthoudknop gebruiken";
+"YouShareHoldToCopy_KEY_DESC" = "Wijzig de knop om de videolink te kopiëren bij indrukken en houd de knop ingedrukt om de videolink met tijdstempel te kopiëren.";

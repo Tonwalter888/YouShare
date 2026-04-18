@@ -74,7 +74,7 @@ static BOOL HoldToCopyKeyEnabled() {
 static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL selector) {
     if (button) {
         UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:target action:selector];
-        longPress.minimumPressDuration = 0.4;
+        longPress.minimumPressDuration = 0.45;
         [button addGestureRecognizer:longPress];
     }
 }

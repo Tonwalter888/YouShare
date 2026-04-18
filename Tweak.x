@@ -23,7 +23,7 @@
 @end
 
 @interface YTPlayerViewController (YouShare)
-- (void)didPressYouShare;
+- (void)didPressYouShare:(UIView *)sourceView;
 - (void)didLongPressYouShare;
 @end
 
@@ -83,7 +83,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 %hook YTPlayerViewController
 // Normal logic (popup UI) and Copy URL without timestamp logic
 %new
-- (void)didPressYouShare {
+- (void)didPressYouShare:(UIView *)sourceView {
     if (!self.currentVideoID) {
         YTAlertView *alertView = [%c(YTAlertView) infoDialog];
         alertView.title = LOC(@"ERROR");
@@ -150,10 +150,10 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
         UIViewController *presenter = (UIViewController *)[self activeVideoPlayerOverlay];
         // Prevent the dialog crashes on iPad
         UIPopoverPresentationController *popover = alert.popoverPresentationController;
-        if (popover) {
-            popover.sourceView = presenter.view;
-            popover.sourceRect = presenter.view.bounds;
-            popover.permittedArrowDirections = 0; // Keeps the dialog centered, I still can't find the proper way to get it shows under the share button.
+        if (popover && sourceView) {
+            popover.sourceView = sourceView;
+            popover.sourceRect = sourceView.bounds;
+            popover.permittedArrowDirections = UIPopoverArrowDirectionUp | UIPopoverArrowDirectionDown;
         }
         [presenter presentViewController:alert animated:YES completion:nil];
     }
@@ -225,7 +225,8 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
     YTMainAppVideoPlayerOverlayView *mainOverlayView = (YTMainAppVideoPlayerOverlayView *)self.superview;
     YTMainAppVideoPlayerOverlayViewController *mainOverlayController = (YTMainAppVideoPlayerOverlayViewController *)mainOverlayView.delegate;
     YTPlayerViewController *playerViewController = mainOverlayController.parentViewController;
-    [playerViewController didPressYouShare];
+    UIView *button = self.overlayButtons[TweakKey];
+    [playerViewController didPressYouShare:button];
 }
 
 // Custom method to handle long press on the share button
@@ -266,7 +267,8 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
     YTInlinePlayerBarController *delegate = self.delegate;
     YTMainAppVideoPlayerOverlayViewController *_delegate = [delegate valueForKey:@"_delegate"];
     YTPlayerViewController *parentViewController = _delegate.parentViewController;
-    [parentViewController didPressYouShare];
+    UIView *button = self.overlayButtons[TweakKey];
+    [parentViewController didPressYouShare:button];
 }
 
 // Custom method to handle long press on the share button

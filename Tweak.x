@@ -242,7 +242,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 %new(v@:@)
 - (void)didLongPressYouShare:(UILongPressGestureRecognizer *)gesture {
     if (gesture.state == UIGestureRecognizerStateBegan) {
-        YYTMainAppVideoPlayerOverlayView *ov = (YTMainAppVideoPlayerOverlayView *)self.superview;
+        YTMainAppVideoPlayerOverlayView *ov = (YTMainAppVideoPlayerOverlayView *)self.superview;
         YTMainAppVideoPlayerOverlayViewController *ovcon = [ov valueForKey:@"_delegate"];
         YTPlayerViewController *parentViewController = (YTPlayerViewController *)ovcon.parentViewController;
         [parentViewController didLongPressYouShare];

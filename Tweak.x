@@ -51,6 +51,8 @@ static NSBundle *YouShareBundle() {
 
 static NSBundle *tweakBundle = nil;
 
+static int localPageStyle;
+
 static UIImage *YouShareYTIconImage(NSInteger iconType, BOOL useLabelColor) {
     YTIIcon *icon = [%c(YTIIcon) new];
     icon.iconType = iconType;
@@ -60,8 +62,7 @@ static UIImage *YouShareYTIconImage(NSInteger iconType, BOOL useLabelColor) {
         if (@available(iOS 13.0, *)) {
             targetColor = [UIColor labelColor];
         } else {
-            UIUserInterfaceStyle style = UIScreen.mainScreen.traitCollection.userInterfaceStyle;
-            if (style == UIUserInterfaceStyleDark) {
+            if (localPageStyle == 1) {
                 targetColor = [UIColor whiteColor];
             } else {
                 targetColor = [UIColor blackColor];
@@ -87,6 +88,14 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 }
 
 %group Main
+%hook YTCommonColorPalette
+- (NSInteger)pageStyle {
+    int value = %orig;
+    localPageStyle = value;
+    return value;
+}
+%end
+
 %hook YTPlayerViewController
 // Normal logic (popup UI) and Copy URL without timestamp logic
 %new

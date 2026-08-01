@@ -56,7 +56,18 @@ static UIImage *YouShareYTIconImage(NSInteger iconType, BOOL useLabelColor) {
     icon.iconType = iconType;
     UIImage *image;
     if (useLabelColor) {
-        image = [icon iconImageWithColor:[UIColor labelColor]];
+        UIColor *targetColor;
+        if (@available(iOS 13.0, *)) {
+            targetColor = [UIColor labelColor];
+        } else {
+            UIUserInterfaceStyle style = UIScreen.mainScreen.traitCollection.userInterfaceStyle;
+            if (style == UIUserInterfaceStyleDark) {
+                targetColor = [UIColor whiteColor];
+            } else {
+                targetColor = [UIColor blackColor];
+            }
+        }
+        image = [icon iconImageWithColor:targetColor];
     } else {
         image = [icon iconImageWithColor:[UIColor whiteColor]];
     }

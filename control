@@ -1,8 +1,8 @@
 Package: dev.water888.youshare
 Name: YouShare
-Version: 1.2.7
+Version: 1.2.8
 Architecture: iphoneos-arm
-Description: Copies the video URL easier
+Description: Copies the video URL easier and faster
 Maintainer: Tonwalter888
 Author: Tonwalter888
 Section: Tweaks

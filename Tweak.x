@@ -49,7 +49,7 @@ static NSBundle *YouShareBundle() {
     return bundle;
 }
 
-#define LOC(x) [YouShareBundle() localizedStringForKey:x value:nil table:nil]
+static NSBundle *tweakBundle = nil;
 
 static UIImage *YouShareYTIconImage(NSInteger iconType, BOOL useLabelColor) {
     YTIIcon *icon = [%c(YTIIcon) new];
@@ -253,6 +253,7 @@ static void addLongPressGestureToTheButton(YTQTMButton *button, id target, SEL s
 %end
 
 %ctor {
+    tweakBundle = YouShareBundle();
     initYTVideoOverlay(TweakKey, @{
         AccessibilityLabelKey: @"YouShare",
         SelectorKey: @"didPressYouShare:",
